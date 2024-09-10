@@ -1,0 +1,975 @@
+{% extends 'extracpanda/base2.html' %} {% load static %} {% block contenido%}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Consolidacion a detalle</title>
+    <!-- DataTables CSS -->
+
+    <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <script src="{% static 'admin/js/Alert.js' %}"></script>
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+    <link
+      href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css"
+      rel="stylesheet"
+    />
+    <!-- SweetAlert2 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .narrow-date {
+        width: auto;
+        display: inline-block;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="cover-container">
+      <div class="cover-content">
+        <img
+          class="cover-img"
+          src="{% static 'admin/images/consolcover2.jpg' %}"
+          alt="extracto"
+        />
+        <h1 class="cover-title">Consolidación</h1>
+      </div>
+    </div>
+
+    <div class="container mt-5">
+      <select
+        id="tabla-select"
+        class="container mt-5 form-select tipoCB"
+        aria-label="Default select example"
+      >
+        <option value="" selectd disabled>Mostrar</option>
+        <option value="Tarjetas">Tarjetas</option>
+        <option value="Efectivo">Efectivo</option>
+      </select>
+      <br />
+      <form id="filter-form" class="row mb-3">
+        <div class="col-sm-2">
+          <label for="fecha_inicio" class="visually-hidden">Fecha inicio</label>
+          <input
+            type="date"
+            class="form-control"
+            id="fecha_inicio"
+            placeholder="Fecha inicio"
+          />
+        </div>
+        <div class="col-sm-2">
+          <label for="fecha_fin" class="visually-hidden">Fecha fin</label>
+          <input
+            type="date"
+            class="form-control"
+            id="fecha_fin"
+            placeholder="Fecha fin"
+          />
+        </div>
+        <div class="col-sm-2">
+          <label for="no_sucursal" class="visually-hidden">No sucursal</label>
+          <input
+            type="text"
+            class="form-control"
+            id="no_sucursal"
+            placeholder="No sucursal"
+          />
+        </div>
+        <div class="col-sm-3">
+          <button type="button" id="filtrar" class="btn btn-dark mb-2">
+            Filtrar
+          </button>
+        </div>
+      </form>
+      <!-- tabla tarjetas -->
+      <div id="tabla-tarjetas" class="container mt-5">
+        <h1 class="mb-4">Transacciones</h1>
+        <table id="main-table" class="tabla-transacciones">
+          <thead>
+            <tr>
+              <th align="center">N° Sucursal</th>
+              <th align="center">Sucursal</th>
+              <th align="center">Total Extracto</th>
+              <th align="center">Consolidado</th>
+              <th align="center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- modal -->
+    <div
+      class="modal fade"
+      id="editarModal"
+      tabindex="-1"
+      aria-labelledby="editarModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editarModalLabel">
+              Detalle de Ventas y Extractos
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-12">
+                <select
+                  id="consolidado-select"
+                  class="form-select"
+                  aria-label="Default select example"
+                >
+                  <option value="" selected>Todo</option>
+                  <option value="check">Consolidado</option>
+                  <option value="times">No Consolidado</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <div>
+                  <label for="fecha_venta">Fecha venta:</label>
+                  <input type="date" id="fecha_venta" class="form-control" />
+                  <input
+                    type="date"
+                    id="fecha_venta_fin"
+                    class="form-control"
+                  />
+                </div>
+                <table id="tabla-izquierda" class="table">
+                  <thead>
+                    <tr>
+                      <th><input type="checkbox" id="checkAllIzquierda" /></th>
+                      <th>Folio venta</th>
+                      <th>ID extracto</th>
+                      <th>Sucursal</th>
+                      <th>Monto Pagado</th>
+                      <th>Forma de Pago</th>
+                      <th>Fecha</th>
+                      <th>Consolidado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Aquí van los datos de la tabla izquierda -->
+                  </tbody>
+                </table>
+                <p>Total Venta: <span id="total-ventas">$0.00</span></p>
+              </div>
+              <div class="col-md-6">
+                <div>
+                  <label for="fecha_extrac">Fecha extracto</label>
+                  <input type="date" id="fecha_extrac" class="form-control" />
+                  <input
+                    type="date"
+                    id="fecha_extrac_fin"
+                    class="form-control"
+                  />
+                </div>
+                <table id="tabla-derecha" class="table">
+                  <thead>
+                    <tr>
+                      <th><input type="checkbox" id="checkAllDerecha" /></th>
+                      <th>Número Cuenta</th>
+                      <th>ID Extracto</th>
+                      <th>Sucursal</th>
+                      <th>Importe</th>
+                      <th>Fecha Operación</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Aquí van los datos de la tabla derecha -->
+                  </tbody>
+                </table>
+                <p>Total Extracto: <span id="total-detalle">$0.00</span></p>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="enviar">
+              Consolidar
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- DataTables JS -->
+
+    <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+      $(document).ready(function () {
+        $("#editarModal").modal();
+      });
+
+      $("#filtrar").on("click", function () {
+        Loading();
+        // Destruir la tabla si ya está inicializada
+        //if ($.fn.DataTable.isDataTable("#main-table")) {
+        //$("#main-table").DataTable().destroy();
+        //}
+
+        var table = $("#main-table").DataTable({
+          searching: false,
+          ajax: {
+            url: '{% url "MAIN:diccionario2" %}',
+            dataSrc: function (json) {
+              // Asegurarse de que 'no_sucursal' se trate como número durante la ordenación
+              json.total_abonos_por_sucursal.sort(function (a, b) {
+                return Number(a.no_sucursal) - Number(b.no_sucursal);
+              });
+              return json.total_abonos_por_sucursal;
+            },
+            data: function (d) {
+              d.fecha_inicio = $("#fecha_inicio").val();
+              d.fecha_fin = $("#fecha_fin").val();
+              d.no_sucursal = $("#no_sucursal").val();
+              d.tipoConsolidacion = $(".tipoCB").val();
+              alert(d.tipoConsolidacion);
+            },
+          },
+          columns: [
+            {
+              data: "no_sucursal",
+              type: "num", // Asegurarse de que se trate como número
+            },
+            { data: "suc" },
+            {
+              data: "total_abonos",
+              render: function (data) {
+                return (
+                  "$" +
+                  parseFloat(data)
+                    .toFixed(2)
+                    .replace(/\d(?=(\d{3})+\.)/g, "$&,")
+                );
+              },
+            },
+            {
+              data: "porcentajes",
+              render: function (data) {
+                if (
+                  Array.isArray(data) &&
+                  data.length > 0 &&
+                  data[0].porcentaje !== undefined
+                ) {
+                  return data[0].porcentaje.toFixed(1) + "%";
+                } else {
+                  return "N/A"; // Devuelve 'N/A' si no hay porcentaje disponible
+                }
+              },
+            },
+            {
+              className: "dt-center",
+              defaultContent:
+                '<button class="btn btn-outline-dark toggle-data">Detalle</button>',
+            },
+          ],
+        });
+
+        $("#filtrar").click(function () {
+          Loading();
+          var fechaInicio = new Date($("#fecha_inicio").val());
+          var fechaFin = new Date($("#fecha_fin").val());
+
+          if (fechaInicio > fechaFin) {
+            Swal.fire({
+              icon: "error",
+              title: "Error en las fechas",
+              text: "La fecha de inicio no puede ser mayor que la fecha de fin.",
+            });
+            return;
+          }
+
+          table.ajax.reload();
+        });
+
+        $("#main-table tbody").on("click", "button.toggle-data", function () {
+          var tr = $(this).closest("tr");
+          var row = table.row(tr);
+
+          if (row.child.isShown()) {
+            row.child.hide();
+            tr.removeClass("shown");
+          } else {
+            row.child(format(row.data())).show();
+            tr.addClass("shown");
+          }
+        });
+
+        function getBankName(nuCuenta) {
+          if (nuCuenta === "110543411" || nuCuenta === "184644166") {
+            return "BBVA";
+          } else if (nuCuenta === "110579440") {
+            return "AMEX";
+          } else if (nuCuenta === "4045893245" || nuCuenta === "4067964031") {
+            return "HSBC";
+          }
+          return "Desconocido";
+        }
+
+        function format(sucursal) {
+          //if (!sucursal || !sucursal.data || !sucursal.ventas) {
+
+          if (!sucursal || !sucursal.data) {
+            console.error(
+              "El objeto sucursal no contiene las propiedades esperadas."
+            );
+            return "";
+          }
+
+          let dataTableHtml = `
+                    <table class="table table-bordered nested-table">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Fecha Operacion</th>
+                                <th>Numero de cuenta</th>
+                                <th>Abono</th>
+                                <th>Banco</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+          if (sucursal.data.length > 0) {
+            console.log(sucursal.data);
+            sucursal.data.forEach((data) => {
+              let bankName = getBankName(data.NuCuenta);
+              dataTableHtml += `
+                            <tr>
+                                <td>${data.Fecha_Op}</td>
+                                <td>${data.NuCuenta}</td>
+                                <td>$${parseFloat(data.Abono)
+                                  .toFixed(2)
+                                  .replace(/\d(?=(\d{3})+\.)/g, "$&,")}</td>
+                                <td>${bankName}</td>
+                                <td><button class="btn btn-outline-dark" onclick="openModal('${
+                                  data.no_sucursal
+                                }', '${
+                data.Fecha_Op
+              }')">Ver Detallesssss</button></td>
+                            </tr>
+                        `;
+            });
+          } else {
+            dataTableHtml += `
+                        <tr>
+                            <td colspan="5">No hay datos disponibles</td>
+                        </tr>
+                    `;
+          }
+
+          dataTableHtml += `</tbody></table>`;
+
+          let ventasTableHtml = `
+                    <table class="table table-bordered nested-table">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Monto</th>
+                                <th>Forma de pago</th>
+                                <th>Fecha</th>
+                                <th>Origen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+          /*     if (sucursal.ventas.length > 0) {
+            sucursal.ventas.forEach((venta) => {
+              ventasTableHtml += `
+                            <tr>
+                                <td>$${parseFloat(venta.monto_pagado)
+                                  .toFixed(2)
+                                  .replace(/\d(?=(\d{3})+\.)/g, "$&,")}</td>
+                                <td>${venta.forma_pago_id}</td>
+                                <td>${venta.fecha}</td>
+                                <td>${venta.origen}</td>
+                            </tr>
+                        `;
+            });*/
+          /* } else {
+            ventasTableHtml += `
+                        <tr>
+                            <td colspan="4">No hay ventas disponibles</td>
+                        </tr>
+                    `;
+          }*/
+
+          ventasTableHtml += `</tbody></table>`;
+
+          return dataTableHtml + ventasTableHtml;
+        }
+        $(document).ready(function () {
+          let noSucursalGlobal = null;
+
+          window.openModal = function (noSucursal, fechaOp) {
+            noSucursalGlobal = noSucursal;
+            var fechaInicio = $("#fecha_inicio").val();
+            var fechaFin = $("#fecha_fin").val();
+            var tipo_transaccion = $(".tipoCB").val();
+            alert(tipo_transaccion);
+
+            console.log(
+              "Datos para el modal:",
+              noSucursal,
+              fechaInicio,
+              fechaFin,
+              tipo_transaccion
+            );
+
+            $.ajax({
+              url: '{% url "MAIN:VD" %}',
+              method: "GET",
+              data: {
+                no_sucursal: noSucursal,
+                fecha_inicio: fechaInicio,
+                fecha_fin: fechaFin,
+                tipo_transaccion: tipo_transaccion,
+              },
+              success: function (response) {
+                console.log("Respuesta del servidor:", response);
+
+                if (!response.data_ventas || !response.data_detalle) {
+                  console.error("Datos incompletos en la respuesta:", response);
+                  return;
+                }
+
+                // Objeto para almacenar los idtbl_ExtractosBancarios que coinciden
+                let coincidencias = {};
+
+                // Almacenar idtbl_ExtractosBancarios de las ventas en coincidencias
+                response.data_ventas.forEach((venta) => {
+                  coincidencias[venta.idtbl_ExtractosBancarios] = true;
+                });
+
+                // Construir HTML para la tabla izquierda (ventas)
+                let leftTableHtml = "";
+                response.data_ventas.forEach((venta) => {
+                  let bandventas;
+                  if (
+                    venta.idtbl_ExtractosBancarios === null ||
+                    parseInt(venta.idtbl_ExtractosBancarios) <= 1
+                  ) {
+                    bandventas =
+                      '<span class="fas fa-times" aria-hidden="true"></span>';
+                  } else {
+                    bandventas =
+                      '<span class="fas fa-check" aria-hidden="true"></span>';
+                  }
+
+                  // Verificar si debe resaltarse la fila
+                  let claseResaltado = "";
+                  if (
+                    bandventas !==
+                    '<span class="fas fa-times" aria-hidden="true"></span>'
+                  ) {
+                    claseResaltado = coincidencias[
+                      venta.idtbl_ExtractosBancarios
+                    ]
+                      ? "table-success"
+                      : "";
+                  }
+
+                  leftTableHtml += `
+                                    <tr class="${claseResaltado}">
+                                        <td><input type="checkbox" class="venta-checkbox" data-monto="${
+                                          venta.monto_pagado
+                                        }"></td>
+                                        <td>${venta.folio_venta}</td>
+                                        <td>${
+                                          venta.idtbl_ExtractosBancarios
+                                        }</td>
+                                        <td>${venta.sucursal}</td>
+                                        <td>$${parseFloat(venta.monto_pagado)
+                                          .toFixed(2)
+                                          .replace(
+                                            /\d(?=(\d{3})+\.)/g,
+                                            "$&,"
+                                          )}</td>
+                                        <td>${venta.forma_pago_id}</td>
+                                        <td>${venta.fecha}</td>
+                                        <td>${bandventas}</td>
+                                    </tr>
+                                `;
+                });
+
+                // Insertar HTML generado en la tabla izquierda
+                $("#tabla-izquierda tbody").html(leftTableHtml);
+
+                // Construir HTML para la tabla derecha (extractos)
+                let rightTableHtml = "";
+                response.data_detalle.forEach((detalle) => {
+                  // Verificar si debe resaltarse la fila
+                  let claseResaltado = coincidencias[
+                    detalle.idtbl_ExtractosBancarios
+                  ]
+                    ? "table-success"
+                    : "";
+
+                  rightTableHtml += `
+                                    <tr class="${claseResaltado}">
+                                        <td><input type="checkbox" class="detalle-checkbox" data-monto="${
+                                          detalle.Abono
+                                        }"></td>
+                                        <td>${detalle.NuCuenta}</td>
+                                        <td>${
+                                          detalle.idtbl_ExtractosBancarios
+                                        }</td>
+                                        <td>${detalle.no_sucursal}</td>
+                                        <td>$${parseFloat(detalle.Abono)
+                                          .toFixed(2)
+                                          .replace(
+                                            /\d(?=(\d{3})+\.)/g,
+                                            "$&,"
+                                          )}</td>
+                                        <td>${detalle.Fecha_Op}</td>
+                                    </tr>
+                                `;
+                });
+
+                // Insertar HTML generado en la tabla derecha
+                $("#tabla-derecha tbody").html(rightTableHtml);
+
+                // Mostrar el modal
+                $("#editarModal").modal("show");
+              },
+              error: function (error) {
+                console.error("Error en la solicitud AJAX:", error);
+              },
+            });
+          };
+
+          $("#fecha_venta, #fecha_venta_fin").on("change", function () {
+            let fecha_venta = $("#fecha_venta").val();
+            let fecha_venta_fin = $("#fecha_venta_fin").val();
+            let tipo_transaccion = $(".tipoCB").val();
+            alert(tipo_transaccion);
+            if (fecha_venta && fecha_venta_fin && noSucursalGlobal) {
+              if (validateDates(fecha_venta, fecha_venta_fin)) {
+                fetchVentas(
+                  noSucursalGlobal,
+                  fecha_venta,
+                  fecha_venta_fin,
+                  tipo_transaccion
+                );
+              }
+            }
+          });
+
+          $("#fecha_extrac, #fecha_extrac_fin").on("change", function () {
+            let fecha_extrac = $("#fecha_extrac").val();
+            let fecha_extrac_fin = $("#fecha_extrac_fin").val();
+            let tipo_transaccion = $(".tipoCB").val();
+            alert(tipo_transaccion);
+            if (fecha_extrac && fecha_extrac_fin && noSucursalGlobal) {
+              if (validateDates(fecha_extrac, fecha_extrac_fin)) {
+                fetchExtractos(
+                  noSucursalGlobal,
+                  fecha_extrac,
+                  fecha_extrac_fin,
+                  tipo_transaccion
+                );
+              }
+            }
+          });
+
+          function validateDates(fecha_venta, fecha_extrac) {
+            if (fecha_venta && fecha_extrac) {
+              let dateVenta = new Date(fecha_venta);
+              let dateExtrac = new Date(fecha_extrac);
+
+              if (dateExtrac < dateVenta) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Error en las fechas",
+                  text: "La fecha del extracto no puede ser menor a la de la venta",
+                });
+                return false;
+              }
+            }
+            return true;
+          }
+
+          let coincidencias = {};
+
+          function fetchVentas(no_sucursal, fecha_venta, fecha_venta_fin) {
+            $.ajax({
+              url: '{% url "MAIN:modal_detalle" %}',
+              data: {
+                no_sucursal: no_sucursal,
+                fecha_venta: fecha_venta,
+                fecha_venta_fin: fecha_venta_fin,
+              },
+              success: function (response) {
+                let ventas = response.data_ventas;
+                let tbody = $("#tabla-izquierda tbody");
+                tbody.empty();
+
+                coincidencias = {}; // Reiniciar coincidencias
+
+                // Almacenar idtbl_ExtractosBancarios de las ventas en coincidencias
+                ventas.forEach((venta) => {
+                  coincidencias[venta.idtbl_ExtractosBancarios] = true;
+                });
+
+                ventas.forEach((venta) => {
+                  let bandventas;
+                  if (
+                    venta.idtbl_ExtractosBancarios === null ||
+                    parseInt(venta.idtbl_ExtractosBancarios) <= 1
+                  ) {
+                    bandventas =
+                      '<span class="fas fa-times" aria-hidden="true"></span>';
+                  } else {
+                    bandventas =
+                      '<span class="fas fa-check" aria-hidden="true"></span>';
+                  }
+
+                  let claseResaltado = "";
+                  if (
+                    bandventas !==
+                    '<span class="fas fa-times" aria-hidden="true"></span>'
+                  ) {
+                    claseResaltado = coincidencias[
+                      venta.idtbl_ExtractosBancarios
+                    ]
+                      ? "table-success"
+                      : "";
+                  }
+
+                  let row = `
+                    <tr class="${claseResaltado}">
+                        <td><input type="checkbox" class="venta-checkbox" data-monto="${
+                          venta.monto_pagado
+                        }"></td>
+                        <td>${venta.folio_venta}</td>
+                        <td>${venta.idtbl_ExtractosBancarios}</td>
+                        <td>${venta.sucursal}</td>
+                        <td>$${parseFloat(venta.monto_pagado)
+                          .toFixed(2)
+                          .replace(/\d(?=(\d{3})+\.)/g, "$&,")}</td>
+                        <td>${venta.forma_pago_id}</td>
+                        <td>${venta.fecha}</td>
+                        <td>${bandventas}</td>
+                    </tr>
+                `;
+                  tbody.append(row);
+                });
+                updateTotalIzquierda();
+              },
+              error: function (error) {
+                console.error("Error en la solicitud AJAX:", error);
+              },
+            });
+          }
+
+          function fetchExtractos(no_sucursal, fecha_extrac, fecha_extrac_fin) {
+            $.ajax({
+              url: '{% url "MAIN:modal_detalle" %}',
+              data: {
+                no_sucursal: no_sucursal,
+                fecha_extrac: fecha_extrac,
+                fecha_extrac_fin: fecha_extrac_fin,
+              },
+              success: function (response) {
+                console.log("Respuesta del servidor:", response);
+                if (response.data_extracto) {
+                  console.log("Datos del detalle:", response.data_extracto);
+                  let extractos = response.data_extracto;
+                  let tbody = $("#tabla-derecha tbody");
+                  tbody.empty();
+
+                  extractos.forEach((extracto) => {
+                    console.log("Extracto individual:", extracto);
+                    let abono = extracto.Abono;
+                    console.log("Valor de Abono:", abono);
+                    if (abono !== undefined) {
+                      console.log(
+                        `Comparando ${extracto.idtbl_ExtractosBancarios} en extractos con coincidencias`,
+                        coincidencias
+                      ); // Aquí se añade la línea de depuración
+                      let claseResaltado = coincidencias[
+                        extracto.idtbl_ExtractosBancarios
+                      ]
+                        ? "table-success"
+                        : "";
+                      let row = `
+                            <tr class="${claseResaltado}">
+                                <td><input type="checkbox" class="detalle-checkbox" data-monto="${abono}"></td>
+                                <td>${extracto.NuCuenta}</td>
+                                <td>${extracto.idtbl_ExtractosBancarios}</td>
+                                <td>${extracto.no_sucursal}</td>
+                                <td>$${parseFloat(abono)
+                                  .toFixed(2)
+                                  .replace(/\d(?=(\d{3})+\.)/g, "$&,")}</td>
+                                <td>${extracto.Fecha_Op}</td>
+                            </tr>
+                        `;
+                      tbody.append(row);
+                    } else {
+                      console.error(
+                        "Abono es undefined para este extracto:",
+                        extracto
+                      );
+                    }
+                  });
+                  updateTotalDerecha();
+                } else {
+                  console.error(
+                    "El campo data_detalle no está presente en la respuesta"
+                  );
+                }
+              },
+              error: function (error) {
+                console.error("Error en la solicitud AJAX:", error);
+              },
+            });
+          }
+
+          // filtro para select de consolidado de ventas
+          $("#consolidado-select").on("change", function () {
+            var selectedValue = $(this).val();
+
+            // Filtrar la tabla izquierda (ventas)
+            $("#tabla-izquierda tbody tr").each(function () {
+              var bandventas = $(this)
+                .find("td:last-child")
+                .find("span")
+                .attr("class");
+
+              if (selectedValue === "") {
+                $(this).show(); // Mostrar todas las filas
+              } else if (
+                selectedValue === "check" &&
+                bandventas === "fas fa-check"
+              ) {
+                $(this).show(); // Mostrar las filas consolidadas (verde)
+              } else if (
+                selectedValue === "times" &&
+                bandventas === "fas fa-times"
+              ) {
+                $(this).show(); // Mostrar las filas no consolidadas (rojo)
+              } else {
+                $(this).hide(); // Ocultar las demás filas
+              }
+            });
+
+            // Filtrar la tabla derecha (extractos)
+            $("#tabla-derecha tbody tr").each(function () {
+              var isHighlighted = $(this).hasClass("table-success"); // Verificar si tiene la clase de resaltado verde
+
+              if (selectedValue === "") {
+                $(this).show(); // Mostrar todas las filas
+              } else if (selectedValue === "check" && isHighlighted) {
+                $(this).show(); // Mostrar las filas consolidadas (verde)
+              } else if (selectedValue === "times" && !isHighlighted) {
+                $(this).show(); // Mostrar las filas no consolidadas (sin resaltado verde)
+              } else {
+                $(this).hide(); // Ocultar las demás filas
+              }
+            });
+          });
+
+          function updateTotalIzquierda() {
+            let total = 0;
+            $(".venta-checkbox:checked").each(function () {
+              let monto = parseFloat($(this).data("monto"));
+              if (!isNaN(monto)) {
+                total += monto;
+              }
+            });
+            $("#total-ventas").text(
+              "$" + total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")
+            );
+          }
+
+          function updateTotalDerecha() {
+            let total = 0;
+            $(".detalle-checkbox:checked").each(function () {
+              let montoData = $(this).data("monto"); // Usar data-monto en lugar de data-abono
+              if (typeof montoData !== "undefined" && montoData !== null) {
+                let monto = parseFloat(montoData);
+                if (!isNaN(monto)) {
+                  total += monto;
+                } else {
+                  console.error(
+                    "El valor de monto no es un número válido:",
+                    montoData
+                  );
+                }
+              } else {
+                console.error(
+                  "data-monto no está definido para este elemento:",
+                  this
+                );
+              }
+            });
+            $("#total-detalle").text(
+              "$" + total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")
+            );
+          }
+
+          $("#checkAllIzquierda").on("change", function () {
+            $(".venta-checkbox").prop("checked", this.checked);
+            updateTotalIzquierda();
+          });
+
+          $("#checkAllDerecha").on("change", function () {
+            $(".detalle-checkbox").prop("checked", this.checked);
+            updateTotalDerecha();
+          });
+
+          $(document).on("change", ".venta-checkbox", function () {
+            updateTotalIzquierda();
+          });
+
+          $(document).on("change", ".detalle-checkbox", function () {
+            updateTotalDerecha();
+          });
+
+          function updateTotalIzquierda() {
+            let totalVentas = 0;
+            $(".venta-checkbox:checked").each(function () {
+              totalVentas += parseFloat($(this).data("monto"));
+            });
+            $("#total-ventas").text(`$${totalVentas.toFixed(2)}`);
+            checkTotals();
+          }
+
+          function updateTotalDerecha() {
+            let totalDetalle = 0;
+            $(".detalle-checkbox:checked").each(function () {
+              totalDetalle += parseFloat($(this).data("monto"));
+            });
+            $("#total-detalle").text(`$${totalDetalle.toFixed(2)}`);
+            checkTotals();
+          }
+
+          function checkTotals() {
+            let totalVentas = parseFloat(
+              $("#total-ventas").text().replace("$", "")
+            );
+            let totalDetalle = parseFloat(
+              $("#total-detalle").text().replace("$", "")
+            );
+
+            if (
+              Math.abs(totalVentas - totalDetalle) <= 1 &&
+              totalVentas > 0 &&
+              totalDetalle > 0
+            ) {
+              $("#enviar").prop("disabled", false);
+            } else {
+              $("#enviar").prop("disabled", true);
+            }
+          }
+
+          $("#enviar").on("click", function () {
+            let selectedVentaIds = [];
+            $(".venta-checkbox:checked").each(function () {
+              let ventaId = $(this)
+                .closest("tr")
+                .find("td:nth-child(2)")
+                .text();
+              selectedVentaIds.push(ventaId);
+            });
+
+            let selectedExtractoId = null;
+            $(".detalle-checkbox:checked").each(function () {
+              selectedExtractoId = $(this)
+                .closest("tr")
+                .find("td:nth-child(3)")
+                .text();
+            });
+
+            if (selectedVentaIds.length > 0 && selectedExtractoId) {
+              $.ajax({
+                url: '{% url "MAIN:actualizar_registros" %}',
+                method: "POST",
+                data: JSON.stringify({
+                  ventas_sk: selectedVentaIds,
+                  idtbl_ExtractosBancarios: selectedExtractoId,
+                }),
+                contentType: "application/json",
+                success: function (response) {
+                  Swal.fire({
+                    icon: "success",
+                    title: "Actualización lista",
+                    text: "La actualización ha sido realizada con éxito.",
+                    confirmButtonText: "Ok",
+                  });
+                },
+                error: function (xhr, status, error) {
+                  let errorMessage =
+                    "Hubo un problema al realizar la actualización.";
+                  if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                  }
+
+                  Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: errorMessage,
+                    confirmButtonText: "Ok",
+                  });
+                },
+              });
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Seleccione al menos un registro de cada tabla.",
+                confirmButtonText: "Ok",
+              });
+            }
+          });
+        });
+      });
+      document.addEventListener("DOMContentLoaded", (event) => {
+        const input = document.getElementById("no_sucursal");
+
+        input.addEventListener("keydown", function (event) {
+          if (event.key === "Enter") {
+            event.preventDefault();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'paginas/base.html' %}
+
+{% block titulo %} index API HANA {% endblock titulo %}
+
+{% block contenido%}
+<div class="content">
+    <div class="animated fadeIn">
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <strong class="card-title">Data Table</strong>
+                    </div>
+                    <div class="card-body">
+                        <table id="bootstrap-data-table" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Id Mobonet</th>
+                                    <th>Codigo</th>
+                                    <th>Venta</th>
+                                    <th>Nombre Tienda</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                          {% for item in data_list %}
+                                <tr>
+                                    <td>{{ item.IdMoboNet }}</td>
+                                    <td>{{ item.Codigo }}</td>
+                                    <td>$ {{ item.Venta }}</td>
+                                    <td>{{ item.Tienda }}</td>
+                                </tr>
+                         {% endfor %}
+                                {% comment %} <tr>
+                                    <td>Tiger Nixon</td>
+                                    <td>System Architect</td>
+                                    <td>Edinburgh</td>
+                                    <td>$320,800</td>
+                                </tr>
+                                <tr>
+                                    <td>Garrett Winters</td>
+                                    <td>Accountant</td>
+                                    <td>Tokyo</td>
+                                    <td>$170,750</td>
+                                </tr> {% endcomment %}
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div><!-- .animated -->
+</div><!-- .content -->
+
+
+{% endblock  %} 
+

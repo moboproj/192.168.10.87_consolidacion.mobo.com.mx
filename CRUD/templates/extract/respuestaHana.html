@@ -1,0 +1,33 @@
+{% extends 'paginas/base.html' %}
+
+{% block titulo %} index Mobonet {% endblock titulo %}
+
+{% block contenido%}
+<div class="content">
+    <div class="animated fadeIn">
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <strong class="card-title">Data Table</strong>
+                    </div>
+                    <div class="card-body">
+                        {% for item in result %}
+                            
+                              <h1>{{ item }}</h1>  
+                               
+
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div><!-- .animated -->
+</div><!-- .content -->
+
+
+{% endblock  %} 
+

@@ -1,0 +1,582 @@
+{% extends 'MAIN/baseMAIN.html' %}
+<!-- {% block titulo %} index Mobonet {% endblock titulo %} -->
+{% load static %}
+{% block contenido%}
+
+<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+    <div class="content-wrapper">
+      <div class="container-fluid">
+        <!-- Icon Cards-->
+        <div class="row">
+          <div class="container mt-4">
+            <div class="row">
+              <div class="col-md-6 text-end">
+                <label for="fechaDerecha" class="form-label">Fecha inicio:</label>
+                <input type="date" class="form-control" id="fechaDerecha">
+              </div>
+              
+              <div class="col-md-6 text-start">
+                <label for="fechaIzquierda" class="form-label">Fecha fin:</label>
+                <input type="date" class="form-control" id="fechaIzquierda">
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col text-center">
+                <button class="btn btn-primary">Consolidar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="row">
+          <div id="bbva_monto" class="col-xl-3 col-sm-6 mb-3">
+            <div class="card text-white bg-primary o-hidden h-100">
+              <!-- primer carta -->
+              <div  class="card-body">
+                <div class="card-body-icon">
+                  <i class="fa fa-fw fa-comments"></i>
+                </div>
+                <div class="mr-5">BBVA</div>
+                <span class="float-left" id="bbvaValue"></span>   
+                <span class="float-right" id="bbvaFooter">Comparando: </span><!-- aqui tiene que ir los montos de comparacion-->
+              </div>
+              <a id="" class="card-footer text-black clearfix small z-1" href="#">
+                <span class="float-left"></span>
+                <span class="float-right">
+                  <i class="fa fa-angle-right"></i>
+                </span>
+              </a>
+            </div>
+          </div>
+
+          <div id="amex_monto" class="col-xl-3 col-sm-6 mb-3">
+            <div class="card text-white bg-warning o-hidden h-100">
+              <div class="card-body">
+                <div class="card-body-icon">
+                  <i class="fa fa-fw fa-list"></i>
+                </div>
+                <div class="mr-5">AMEX</div>
+                <span class="float-left"></span>
+              </div>
+              <a id="amexFooter" class="card-footer text-black clearfix small z-1" href="#">
+                <span class="float-left">$</span>
+                <span class="float-right">
+                  <i class="fa fa-angle-right"></i>
+                </span>
+              </a>
+            </div>
+          </div>
+          
+          <div id="hsbc_monto" class="col-xl-3 col-sm-6 mb-3">
+            <div class="card text-white bg-success o-hidden h-100">
+              <div class="card-body">
+                <div class="card-body-icon">
+                  <i class="fa fa-fw fa-shopping-cart"></i>
+                </div>
+                <div class="mr-5">HSBC</div>
+                <span class="float-left"></span>
+                <span class="float-right" id="hsbcFooter">Comparando: </span>
+              </div>
+              <a id="hsbcFooter" class="card-footer text-black clearfix small z-1" href="#">
+                <span class="float-left">$</span>
+                <span class="float-right">
+                  <i class="fa fa-angle-right"></i>
+                </span>
+              </a>
+            </div>
+          </div>
+
+          <div id="otrobbva" class="col-xl-3 col-sm-6 mb-3">
+            <div class="card text-white bg-danger o-hidden h-100">
+              <div class="card-body">
+                <div class="card-body-icon">
+                  <i class="fa fa-fw fa-support"></i>
+                </div>
+                <div class="mr-5">BBVA 2</div>
+                <span class="float-left"></span>
+                <span class="float-right" id="bbva2Footer">Comparando: </span>
+              </div>
+              <a id="otrobbvaFooter" class="card-footer text-black clearfix small z-1" href="#">
+                <span class="float-left">$</span>
+                <span class="float-right">
+                  <i class="fa fa-angle-right"></i>
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      
+        <div class="row">
+            <div class="col-lg-12">
+              <!-- Example Line Chart Card-->
+              <div class="card mb-3">
+                <div class="card-header">
+                  <i class="fa fa-line-chart"></i> Comparación</div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-sm-8 my-auto">
+                      <!-- Agrega un nuevo canvas para la gráfica lineal -->
+                      <canvas id="myLineChart" width="100" height="50"></canvas>
+                    </div>
+                    
+                    <div class="col-sm-4 text-center my-auto">
+                      <!-- Agrega los elementos para mostrar las sumas -->
+                      <div class="h4 mb-0 text-primary"></div>
+                      <div class="small text-muted">BBVA</div>
+                      <hr>
+                      <div class="h4 mb-0 text-warning"></div>
+                      <div class="small text-muted">AMEX</div>
+                      <hr>
+                      <div class="h4 mb-0 text-success"></div>
+                      <div class="small text-muted">HSBC</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer small text-muted">.</div>
+              </div>
+            </div>
+          </div>
+        
+        <!-- Example DataTables Card-->
+        <div class="card mb-3">
+          <div class="card-header">
+            <i class="fa fa-table"></i>Totales por tienda</div>
+          <div class="card-body">
+            <form id="sucursalForm">
+              <div class="row">
+                <!-- <div class="col-md-6">
+                     <label for="fecha1">Fecha inicio</label>
+                     <input type="date" class="form-control form-control-sm" id="fecha1" name="fecha1">
+                </div>
+                <div class="col-md-6">
+                      <label for="fecha2">Fecha fin</label>
+                      <input type="date" class="form-control form-control-sm" id="fecha2" name="fecha2">
+                </div> -->
+              </div>
+              <br>
+              <!-- <button type="button" class="btn btn-outline-secondary" onclick="actualizartabla()">Buscar</button> -->
+              <!-- Agrega este botón al formulario -->
+              <!-- <button type="button" class="btn btn-outline-secondary" onclick="actualizartabla()">Filtrar por Fechas</button> -->
+
+            </form>
+            <br>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>total</th>
+                            <th>total extracto</th>
+                            <th>fecha_Op</th>
+                            <th>fecha_c</th>
+                            <th>fecha_ini</th>
+                            <th>fecha_fin</th>
+                            <th>NuCuenta</th>
+                            <th>cuenta base bancos</th>
+                            <th>sucursal</th>
+                            <th>bancos</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>total</th>
+                            <th>total extracto</th>
+                            <th>fecha_Op</th>
+                            <th>fecha_c</th>
+                            <th>fecha_ini</th>
+                            <th>fecha_fin</th>
+                            <th>NuCuenta</th>
+                            <th>cuenta base bancos</th>
+                            <th>sucursal</th>
+                            <th>bancos</th>
+                        </tr>
+                    </tfoot>
+                    <tbody id="dataTableBody">
+                        <!-- Aquí se agregarán dinámicamente los registros -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+            <script>
+                $(document).ready(function () {
+                    // Manejar clic en una fila para expandir o contraer
+                    // $('#dataTable tbody').on('click', 'tr', function () {
+                        $('#dataTable tbody').on('click', 'tr td:first-child', function () {
+                        var row = $(this);
+                        var icon = row.find('.expand-icon');
+            
+                        if (row.next().hasClass('child-row')) {
+                            // Ya se han cargado los registros, contraer
+                            row.next().remove();
+                            icon.html('+');
+                        } else {
+                            // Realizar solicitud AJAX para obtener registros adicionales
+                            var rowData = row.data('row-data');
+                            $.ajax({
+                                type: 'GET',
+                                url: '/tu_endpoint_ajax/',
+                                data: { id: rowData.id }, // Ajusta según tu lógica de servidor
+                                success: function (data) {
+                                    // Agregar registros adicionales y expandir
+                                    row.after('<tr class="child-row"><td colspan="10">' + data + '</td></tr>');
+                                    icon.html('-');
+                                },
+                                error: function (error) {
+                                    console.log(error);
+                                }
+                            });
+                        }
+                    });
+                });
+            </script>            
+            <br>
+            <!-- segunda tabla no mach -->
+            <div class="table-responsive">
+              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Fecha Operacion</th>
+                    <th>Sucursal</th>
+                    <th>Abono</th>
+                    <th>Fecha inicio</th>
+                    <th>Fecha fin</th>
+                    <th>sucursal</th>
+                    <th>Pagado</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>Fecha Operacion</th>
+                    <th>Sucursal</th>
+                    <th>Abono</th>
+                    <th>Fecha inicio</th>
+                    <th>Fecha fin</th>
+                    <th>sucursal</th>
+                    <th>Pagado</th>
+                  </tr>
+                </tfoot>
+                <tbody id="dataTableBodyNomach">
+                  <tr>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer small text-muted"></div>
+        </div>
+      </form>
+      </div>
+      <!-- /.container-fluid-->
+      <!-- /.content-wrapper-->
+      <footer class="sticky-footer">
+        <div class="container">
+          <div class="text-center">
+            <small>Copyright © MOBO</small>
+          </div>
+        </div>
+      </footer>
+      <!-- Scroll to Top Button-->
+      <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fa fa-angle-up"></i>
+      </a>
+      <!-- Logout Modal-->
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel"></h5>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body">.</div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">.</button>
+              <a class="btn btn-primary" href="login.html">.</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    <!-- </div> -->
+    
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+      // Datos iniciales del gráfico
+      var initialData = [/* Datos iniciales correspondientes a BBVA, AMEX, HSBC */];
+    
+      // Configuración del gráfico
+      var chartData = {
+        labels: ['BBVA', 'AMEX', 'HSBC'],
+        datasets: [{
+          label: 'Totales',
+          backgroundColor: ['#007BFF', '#FFC107', '#28A745'],
+          borderColor: ['#007BFF', '#FFC107', '#28A745'],
+          borderWidth: 1,
+          data: initialData
+        }]
+      };
+    
+      var options = {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      };
+    
+      // Obtén el contexto del canvas
+      var ctx = document.getElementById('myBarChart').getContext('2d');
+    
+      // Crea el gráfico de barras inicial
+      var myBarChart = new Chart(ctx, {
+        type: 'bar',
+        data: chartData,
+        options: options
+      });
+    
+      // Función para actualizar el gráfico con nuevos datos
+      function updateChart(newData) {
+        myBarChart.data.datasets[0].data = newData;
+        myBarChart.update();
+      }
+    
+      $(document).ready(function(){
+        $.ajax({
+          url: '{% url "MAIN:suma_extbanco" %}',
+          type: 'GET',
+          dataType: 'json',
+          success: function(data){
+            console.log(data);
+    
+            // Procesar los datos recibidos y actualizar los elementos HTML
+            for (let i = 0; i < data.length; i++){
+              const entry = data[i];
+              const banco = entry.Banco;
+              const monto = entry.TD;
+    
+              // Actualizar los elementos HTML con los montos correspondientes
+              if (banco === 'BBVA'){
+                $('#bbvaFooter .float-right').html('$' + monto);
+                $('.text-primary').html('$' + monto);
+              }else if (banco === 'AMEX'){
+                $('.text-warning').html('$' + monto);
+              }else if (banco === 'HSBC'){
+                $('.text-success').html('$' + monto);
+              }
+            }
+    
+            // Llamar a la función de actualización del gráfico con los nuevos datos
+            updateChart(data.map(entry => entry.TD));
+    
+            const lastUpdate = new Date();
+            $('.card-footer').text('Última Actualización: ' + lastUpdate.toLocaleDateString());
+          },
+          error: function(error){
+            console.log('Error en la solicitud Ajax: ', error);
+            console.log('{%url "MAIN:suma_extbanco"%}');
+            console.log('Respuesta del servidor:', error.responseText);
+            $('.card-footer').text('Error al cargar los datos. Por favor, inténtalo de nuevo más tarde.');
+          }
+        });
+      });
+    </script>
+
+
+    <script>
+      $(document).ready(function(){
+        $.ajax({
+          url: '{% url "MAIN:suma_hana"%}',
+          type: 'GET',
+          dataType: 'json',
+          success: function(data){
+            console.log(data);
+
+            for (let i = 0; i < data.length; i++){
+              const entry = data[i];
+              const cuenta = entry.cuenta_base_bancos;
+              const montos = entry.totales;
+
+              if (cuenta === '3245'){
+                $('#bbva_monto .float-left').html('$' + montos);
+                // $('#bbvaFooter .float-left').html('$' + monto);
+              }else if (cuenta === '3411'){
+                $('#amex_monto .float-left').html('$' + montos);
+                // $('#amexFooter .float-left').html('$' + monto);
+              }else if (cuenta === '4031'){
+                $('#hsbc_monto .float-left').html('$' + montos);
+                // $('#hsbcFooter .float-left').html('$' + monto);
+              }else if (cuenta === '9440'){
+                $('#otrobbva .float-left').html('$' + montos);
+                // $('#otroBancoFooter .float-left').html('$' + monto);
+              }
+            }  
+          },
+          error: function(error){
+            console.log('Error en la solitud Ajax Hana: ', error);
+            console.log('{%url "MAIN:suma_hana"%}');
+            console.log('Respuesta del servidor:', error.responseText);
+          }
+        });
+      });
+    </script>
+  <script>
+    $(document).ready(function () {
+        // Datos de prueba (reemplázalos con tus datos reales obtenidos del servidor)
+        const sumasDeDinero = [145245, 245345, 24543];
+        const montosAComparar = [80, 220, 300];
+
+        const hsbcSumas = [150, 250, 350];
+        const hsbcMontosAComparar = [120, 260, 350];
+
+        const bbva2Sumas = [2000, 30500, 43400];
+        const bbva2MontosAComparar = [1800, 3220, 1400];
+
+        // Llamada a la función de comparación para HSBC
+        compararMontos(hsbcSumas, hsbcMontosAComparar, 'hsbc');
+
+        // Llamada a la función de comparación para Otro BBVA
+        compararMontos(bbva2Sumas, bbva2MontosAComparar, 'bbva2');
+    });
+
+    function compararMontos(sumas, montos, entidad) {
+        // Verificar si se proporcionaron ambos conjuntos de datos
+        if (!sumas || !montos) {
+            console.error('Se requieren sumas y montos para la comparación.');
+            return;
+        }
+
+        // Verificar si ambos conjuntos de datos son arreglos
+        if (!Array.isArray(sumas) || !Array.isArray(montos)) {
+            console.error('Ambos conjuntos de datos deben ser arreglos.');
+            return;
+        }
+
+        // Verificar si ambos arreglos tienen la misma longitud
+        if (sumas.length !== montos.length) {
+            console.error('Los conjuntos de datos deben tener la misma longitud para la comparación.');
+            return;
+        }
+
+        // Comparar los totales y mostrar la diferencia en las áreas específicas
+        for (let i = 0; i < sumas.length; i++) {
+            const porcentaje = ((montos[i] - sumas[i]) / sumas[i]) * 100;
+            const entidadFooter = $(`#${entidad}Footer`);
+            const entidadValue = $(`#${entidad}Value`);
+
+            if (porcentaje < 0) {
+                entidadFooter.append(`consolidado: ${Math.abs(porcentaje.toFixed(2))}% `);
+            } else if (porcentaje > 0) {
+                entidadFooter.append(`falta: ${porcentaje.toFixed(2)}% `);
+            } else {
+                entidadFooter.append('Sin cambios ');
+            }
+        }
+
+        // Mostrar las sumas en el área específica
+        $(`#${entidad}Value`).text(`Suma: ${sumas.reduce((a, b) => a + b, 0)}`);
+    }
+</script>
+<script>
+$(document).ready(function() {
+        $.ajax({
+            url: '{% url "MAIN:nomach" %}',  // Actualiza la ruta según tu estructura de directorios y nombre de vista
+            type: 'GET',
+            dataType: 'json',
+            // data: {
+            //     fechaInicio: fechaInicio,
+            //     fehcaFin: fehcaFin
+            // },
+            success: function(data) {
+                console.log(data);
+
+                // Actualizar los datos en la tabla
+                const tableBody = $('#dataTableBody');
+                tableBody.empty(); // Limpiar el cuerpo de la tabla
+
+                for (let i = 0; i < data.length; i++) {
+                    const fila = data[i];
+
+                    // Crea una nueva fila y agrega las celdas
+                    const newRow = $('<tr>');
+                    newRow.append(`<td>${fila.Fecha_Op}</td>`);
+                    newRow.append(`<td>${fila.no_sucursal}</td>`);
+                    newRow.append(`<td>${fila.Abono}</td>`);
+                    newRow.append(`<td>${fila.fecha_ini_amex}</td>`);
+                    newRow.append(`<td>${fila.fecha_fin_amex}</td>`);
+                    newRow.append(`<td>${fila.sucursal}</td>`);
+                    newRow.append(`<td>${fila.pagado}</td>`);
+
+                    tableBody.append(newRow);
+                }
+
+                // Inicializar DataTable para dividir en hojas
+                $('#dataTable').DataTable();
+            },
+            error: function(error) {
+                // console.log('Error en la solicitud tablas: ', error);
+                console.log('Error en la solicitud nomach: ', error.responseText);
+                $('#mensajeError').text(JSON.parse(error.responseText).error);
+            }
+        });
+    });
+</script>
+<script>
+    // Obtén los datos de tus extractos bancarios y ventas desde el contexto de Django
+    // var dataExtractos = {{ dataExtractos|safe }};
+    // var dataVentas = {{ dataVentas|safe }};
+    var dataExtractos = [4,5,6]; // Datos de extractos bancarios
+    var dataVentas = [1,2,3,4];    // Datos de ventas
+
+    // Crea un objeto de contexto para la gráfica lineal
+    var ctxLine = document.getElementById('myLineChart').getContext('2d');
+
+    // Configura los datos y opciones para la gráfica lineal
+    var configLine = {
+      type: 'line',
+      data: {
+        labels: Array.from({ length: dataVentas.length }, (_, i) => 'Día ' + (i + 1)),
+        datasets: [
+          {
+            label: 'BBVA',
+            borderColor: 'blue',
+            data: dataExtractos.bbva
+          },
+          {
+            label: 'AMEX',
+            borderColor: 'orange',
+            data: dataExtractos.amex
+          },
+          {
+            label: 'HSBC',
+            borderColor: 'green',
+            data: dataExtractos.hsbc
+          },
+          {
+            label: 'Ventas',
+            borderColor: 'red',
+            data: dataVentas
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            type: 'linear',
+            position: 'bottom'
+          },
+          y: {
+            type: 'linear',
+            position: 'left'
+          }
+        }
+      }
+    };
+
+    // Crea la gráfica lineal
+    var myLineChart = new Chart(ctxLine, configLine);
+</script>
+  </body>
+{% endblock %} 

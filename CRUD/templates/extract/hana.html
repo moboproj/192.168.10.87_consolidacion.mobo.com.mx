@@ -1,0 +1,45 @@
+{% extends 'paginas/base.html' %}
+
+{% block titulo %} index Mobonet {% endblock titulo %}
+
+{% block contenido%}
+<div class="content">
+    <div class="animated fadeIn">
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <strong class="card-title">Data Table</strong>
+                    </div>
+                    <div class="card-body">
+                        <table id="bootstrap-data-table" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>DocNum</th>
+                                    <th>NumAtCard</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in result %}
+                                    <tr>
+                                        <td>{{ item.DocNum }}</td>
+                                        <td>{{ item.NumAtCard }}</td>
+                                        {% comment %} <td>{{ item.datos_pago.0.barcode }}</td> {% endcomment %}
+                                    </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div><!-- .animated -->
+</div><!-- .content -->
+
+
+{% endblock  %} 
+

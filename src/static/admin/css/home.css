@@ -1,0 +1,1367 @@
+:root {
+    --primary-color: #616f41;
+    --secondary-color: #ffffff;
+    --black: #000;
+    --color-white: #ffffff;
+    --background: #ffffff;
+}
+
+
+body {
+    padding: 0;
+    margin: 0;
+    font-family: "Klee One", cursive;
+    font-weight: 400;
+    background-color: var(--background);
+    /* Color de fondo del body */
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+    background: #282927;
+    border-radius: 20px;
+    box-shadow: inset 0 0 5px rgba(255, 248, 248, 0.849);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #ced3c8ec, #ced3c8ec);
+    /* Cambio de color en hover */
+    border: 2px solid #616f41;
+    /* Borde diferente en hover */
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7);
+    /* Intensificación de la sombra en hover */
+}
+
+.body-main {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.grid-container {
+    max-width: 980px;
+    margin: auto;
+}
+
+a {
+    text-decoration: none;
+    display: inline;
+    cursor: pointer;
+    color: var(--black);
+    /* Color de texto usando la variable */
+}
+
+header {
+    width: 100%;
+    height: 140px;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+}
+
+/* Estilo para el contenedor del encabezado */
+.header-icons-container {
+    display: flex;
+    /* Organiza los elementos en una fila */
+    align-items: center;
+    /* Alinea verticalmente los elementos */
+    justify-content: space-between;
+    /* Espacia los elementos entre sí */
+    padding: 20px;
+    /* Espaciado interno */
+    background-color:  hsl(210, 12%, 86%);
+    /* Fondo con color de fondo de la página */
+    border-radius: 15px;
+    /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Sombra sutil para dar profundidad */
+}
+
+/* Estilo para el contenedor del logo */
+.nav-logo-container {
+    display: flex;
+    /* Organiza el logo en el contenedor */
+    align-items: center;
+    /* Alinea verticalmente el logo */
+    margin-right: 20px;
+    /* Espaciado a la derecha del logo */
+}
+
+.nav-logo-container img {
+    width: 60%;
+    /* Tamaño máximo del logo */
+    height: auto;
+    /* Mantiene la proporción del logo */
+    transition: transform 0.3s ease;
+    /* Transición suave para el efecto de hover */
+}
+
+.nav-logo-container img:hover {
+    transform: scale(1.1);
+    /* Agranda el logo al pasar el mouse */
+}
+
+/* Estilo para el contenedor de los iconos de redes sociales */
+.icons {
+    display: flex;
+    /* Organiza los iconos en una fila */
+    gap: 15px;
+    /* Espaciado entre los iconos */
+}
+
+.social-icon img {
+    width: 30px;
+    /* Tamaño del icono */
+    height: 30px;
+    /* Tamaño del icono */
+    transition: transform 0.3s ease, filter 0.3s ease;
+    /* Transiciones suaves */
+}
+
+.social-icon img:hover {
+    transform: scale(1.1);
+    /* Agranda el icono al pasar el mouse */
+    filter: brightness(1.2);
+    /* Aumenta el brillo del icono al pasar el mouse */
+}
+
+/* Estilo para los enlaces adicionales */
+.nav-links {
+    display: flex;
+    /* Organiza los enlaces en una fila */
+    gap: 20px;
+    /* Espaciado entre los enlaces */
+}
+
+.nav-link {
+    text-decoration: none;
+    /* Elimina el subrayado de los enlaces */
+    color: var(--color-white);
+    /* Color de los enlaces */
+    font-weight: bold;
+    /* Hace el texto en negrita */
+    padding: 5px 10px;
+    /* Espaciado interno */
+    border-radius: 5px;
+    /* Bordes redondeados */
+    transition: color 0.3s ease, background-color 0.3s ease;
+    /* Transiciones suaves */
+}
+
+.nav-link:hover {
+    color: var(--background);
+    /* Cambia el color del texto al pasar el cursor */
+    background-color: var(--secondary-color);
+    /* Fondo con color secundario al pasar el cursor */
+}
+
+/* Aplicar formato tipo tarjetón a los div con la clase .container.m6 */
+.container.m6 {
+    background-color: #ffffff;
+    /* Fondo oscuro para el contenedor */
+    border-radius: 15px;
+    /* Bordes redondeados */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+    /* Sombra pronunciada */
+    padding: 40px;
+    /* Espaciado interior aumentado */
+    margin-top: 50px;
+    /* Espacio superior */
+}
+
+/* Estilizar las tablas dentro del contenedor .container.m6 */
+.container.m6 .table {
+    background-color: #ffffff;
+    /* Fondo oscuro para la tabla */
+    border-radius: 10px;
+    /* Bordes redondeados para la tabla */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    /* Sombra para la tabla */
+    color: #fff;
+    /* Color de texto para la tabla */
+}
+
+/* Estilizar los encabezados de la tabla */
+.container.m6 .table thead th {
+    background-color:rgb(171, 178, 185);
+    color: #000000;
+    /* Color de texto para el encabezado */
+}
+
+/* Estilizar las celdas de la tabla */
+.container.m6 .table td,
+.container.m6 .table th {
+    padding: 15px;
+    text-align: center;
+    border: 1px solid #ffffff;
+}
+
+/* Estilo para la tabla de colores definidos */
+.color-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.color-table th,
+.color-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ffffff;
+}
+
+.color-table th {
+    background-color: var(--primary-color);
+    color: var(--color-white);
+}
+
+.color-table td {
+    background-color: #ffffff;
+    /* Blanco difuminado */
+}
+
+.color-table tr:nth-child(even) td {
+    background-color: #ffffff;
+    /* Blanco ligeramente más oscuro para alternar filas */
+}
+
+
+/* Aplicar formato tipo tarjetón a los div con la clase .container.m7 */
+.container.m7 {
+    background-color: #ffffff;
+    /* Fondo oscuro para el contenedor */
+    border-radius: 15px;
+    /* Bordes redondeados */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+    /* Sombra pronunciada */
+    padding: 40px;
+    /* Espaciado interior aumentado */
+    margin-top: 50px;
+    /* Espacio superior */
+}
+
+/* Estilizar las tablas dentro del contenedor .container.m7 */
+.container.m7 .table {
+    background-color: #ffffff;
+    /* Fondo oscuro para la tabla */
+    border-radius: 10px;
+    /* Bordes redondeados para la tabla */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    /* Sombra para la tabla */
+    color: #fff;
+    /* Color de texto para la tabla */
+}
+
+/* Estilizar los encabezados de la tabla */
+.container.m7 .table thead th {
+    background-color: rgb(171, 178, 185);;
+    color: #000000;
+    /* Color de texto para el encabezado */
+}
+
+/* Estilizar las celdas de la tabla */
+.container.m7 .table td,
+.container.m7 .table th {
+    padding: 15px;
+    text-align: center;
+    border: 1px solid #ffffff;
+}
+
+/* Estilo para la tabla de colores definidos */
+.color-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.color-table th,
+.color-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ffffff;
+}
+
+.color-table th {
+    background-color: var(--primary-color);
+    color: var(--color-white);
+}
+
+.color-table td {
+    background-color: #ffffff;
+    /* Blanco difuminado */
+}
+
+.color-table tr:nth-child(even) td {
+    background-color: #ffffff;
+    /* Blanco ligeramente más oscuro para alternar filas */
+}
+
+.debitoCss {
+    transition: transform 0.3s ease, box-shadow 1.7s ease;
+    /* Añade sombra por defecto para un mejor contraste */
+    box-shadow: 0 4px 8px rgba(63, 188, 5, 0.2);
+    padding: 10px;
+}
+
+.debitoCss:hover {
+    /* transform: scale(1.05); */
+    /* Intensifica la sombra al pasar el ratón sobre la tarjeta */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Efectos específicos para la imagen */
+.debitoCss-img {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.debitoCss:hover .debitoCss {
+    /* Cambia la opacidad de la imagen y agrega un ligero giro */
+    opacity: 0.8;
+    transform: scale(1.1) rotate(2deg);
+}
+
+.efectivoCss {
+    transition: transform 0.3s ease, box-shadow 1.7s ease;
+    /* Añade sombra por defecto para un mejor contraste */
+    box-shadow: 0 4px 8px rgba(63, 188, 5, 0.2);
+    padding: 10px;
+}
+
+.efectivoCss:hover {
+    transform: scale(1.05);
+    /* Intensifica la sombra al pasar el ratón sobre la tarjeta */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Efectos específicos para la imagen */
+.efectivoCss-img {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.efectivoCss:hover .debitoCss {
+    /* Cambia la opacidad de la imagen y agrega un ligero giro */
+    opacity: 0.8;
+    transform: scale(1.1) rotate(2deg);
+}
+
+.custom-card {
+    border-radius: 15px;
+    /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra suave */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    /* Transiciones suaves */
+    overflow: hidden;
+    /* Asegura que los bordes redondeados también apliquen a las imágenes */
+}
+
+.custom-card:hover {
+    transform: translateY(-10px);
+    /* Elevar la tarjeta al pasar el mouse */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    /* Incrementar la sombra */
+}
+
+.custom-card .card-img-top {
+    border-radius: 15px 15px 0 0;
+    /* Imagen con bordes superiores redondeados */
+    transition: transform 0.3s ease-in-out;
+    /* Transición para el efecto hover de la imagen */
+}
+
+.custom-card .card-body {
+    padding: 20px;
+    /* Espacio interno más amplio */
+    text-align: center;
+    /* Centrar el texto */
+}
+
+.custom-alert {
+    background-color: var(--secondary-color);
+    /* Fondo inicial usando variable */
+    color: black;
+    /* Texto negro usando variable */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    padding: 20px;
+    /* Padding interno */
+    margin: 20px auto;
+    /* Margen superior e inferior */
+    max-width: 800px;
+    /* Ancho máximo para centrar */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    /* Transiciones suaves */
+}
+
+.custom-alert h3 {
+    margin: 0;
+    /* Sin margen */
+    font-size: 24px;
+    /* Tamaño de fuente */
+    letter-spacing: 1px;
+    /* Espaciado entre letras */
+}
+
+.custom-alert:hover {
+    background-color: rgb(149, 165, 166);
+    /* Color de fondo al hacer hover usando variable */
+    transform: scale(1.05);
+    /* Efecto de escalado */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    /* Sombra más intensa */
+
+}
+
+.custom-alert:active {
+    background-color:  rgb(149, 165, 166);
+    /* Fondo más oscuro al hacer clic usando variable */
+    color: var(--color-white);
+    /* Texto blanco al hacer clic usando variable */
+}
+
+.custom-alert b {
+    color: inherit;
+    /* El texto en negrita sigue el color del texto principal */
+}
+
+.custom-alert_ {
+    background-color: var(--secondary-color);
+    /* Fondo inicial usando variable */
+    color: var(--black);
+    /* Texto negro usando variable */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    padding: 20px;
+    /* Padding interno */
+    margin: 20px auto;
+    /* Margen superior e inferior */
+    max-width: 800px;
+    /* Ancho máximo para centrar */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    /* Transiciones suaves */
+}
+
+.custom-alert_ h3 {
+    margin: 0;
+    /* Sin margen */
+    font-size: 24px;
+    /* Tamaño de fuente */
+    letter-spacing: 1px;
+    /* Espaciado entre letras */
+}
+
+.custom-alert_:hover {
+    background-color:  rgb(149, 165, 166);
+    /* Color de fondo al hacer hover usando variable */
+    transform: scale(1.05);
+    /* Efecto de escalado */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    /* Sombra más intensa */
+}
+
+.custom-alert_:active {
+    background-color:  rgb(149, 165, 166);
+    /* Fondo más oscuro al hacer clic usando variable */
+    color: var(--color-white);
+    /* Texto blanco al hacer clic usando variable */
+}
+
+.custom-alert_ b {
+    color: inherit;
+    /* El texto en negrita sigue el color del texto principal */
+}
+
+/* pagina de cb  */
+
+.modern-select {
+    display: inline-block;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--color-white);
+    background-color:  rgb(149, 165, 166);
+    border: 1px solid  rgb(149, 165, 166);
+    border-radius: 5px;
+    box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+    margin-top: 100px;
+    /* Ajusta este valor según sea necesario */
+}
+
+.modern-select:focus {
+    background-color: var(--secondary-color);
+    border-color: darken(var(--primary-color), 10%);
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.modern-select option {
+    background-color: var(--background);
+    color: var(--black);
+}
+
+
+
+/* Estilos para el select */
+#tabla-select {
+    background-color: var(--color-white);
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
+    color: var(--black);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+#tabla-select:focus {
+    background-color: var(--background);
+    border-color: var(--secondary-color);
+    outline: none;
+}
+
+/* Estilos para el card */
+.card {
+    border: 1px solid var(--primary-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: var(--color-white);
+}
+
+.card-header {
+    background-color: var(--primary-color);
+    color: var(--color-white);
+    font-size: 18px;
+    font-weight: bold;
+    border-bottom: 1px solid var(--secondary-color);
+    padding: 15px;
+}
+
+.card-body {
+    padding: 20px;
+    /* background-color: var(--background); */
+}
+
+/* Contenedor principal para la tarjeta */
+.container {
+    background-color:hsl(204, 8%, 95%);
+    /* Color de fondo del contenedor */
+    padding: 20px;
+    /* Espaciado alrededor del contenido */
+    border-radius: 10px;
+    /* Esquinas redondeadas */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombreado sutil */
+   
+}
+
+
+
+/* Estilo de la tarjeta */
+.card {
+    border: none;
+    /* Sin borde por defecto */
+    border-radius: 10px;
+    /* Esquinas redondeadas */
+    background-color: var(--color-white);
+    /* Fondo blanco para la tarjeta */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombreado sutil */
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    /* Transición suave para hover */
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    /* Sombra más pronunciada al pasar el cursor */
+    transform: scale(1.02);
+    /* Ligero aumento de tamaño para efecto de tarjeta */
+}
+
+/* Encabezado de la tarjeta */
+.card-header {
+    background-color: var(--primary-color);
+    /* Color de fondo del encabezado */
+    color: var(--color-white);
+    /* Color del texto en el encabezado */
+    padding: 15px;
+    /* Espaciado interno */
+    border-bottom: 2px solid var(--secondary-color);
+    /* Línea de separación */
+    border-radius: 10px 10px 0 0;
+    /* Esquinas redondeadas superiores */
+}
+
+/* Cuerpo de la tarjeta */
+.card-body {
+    padding: 20px;
+    /* Espaciado interno */
+}
+
+/* Etiqueta del formulario */
+label {
+    font-weight: bold;
+    /* Texto en negrita */
+    color:  rgb(149, 165, 166);
+    /* Color del texto */
+    margin-bottom: 10px;
+    /* Espaciado inferior */
+    display: block;
+    /* Bloque para que ocupe toda la línea */
+}
+
+/* Select del formulario */
+.form-control {
+    background-color: var(--color-white);
+    /* Fondo blanco del select */
+    border: 1px solid var(--secondary-color);
+    /* Borde color secundario */
+    border-radius: 5px;
+    /* Esquinas redondeadas */
+    padding: 10px;
+    /* Espaciado interno */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Transición de color del borde y sombra */
+}
+
+.form-control:hover,
+.form-control:focus {
+    border-color: var(--primary-color);
+    /* Cambia el color del borde al enfocar */
+    box-shadow: 0 0 5px rgb(255, 255, 255);
+    /* Sombra al enfocar */
+}
+
+/* Botón del formulario */
+.btn-outline-success {
+    border-color:  rgb(149, 165, 166); 
+    /* Color del borde del botón */
+    color: var(--primary-color);
+    /* Color del texto del botón */
+    background-color: var(--color-white);
+    /* Fondo blanco del botón */
+    border-radius: 5px;
+    /* Esquinas redondeadas */
+    padding: 10px 20px;
+    /* Espaciado interno */
+    font-weight: bold;
+    /* Texto en negrita */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    /* Transición de color */
+}
+
+.btn-outline-success:hover {
+    background-color:  rgb(149, 165, 166); 
+    /* Fondo del botón al pasar el ratón */
+    color: var(--color-white);
+    /* Color del texto al pasar el ratón */
+    border-color:  rgb(149, 165, 166); 
+    /* Color del borde al pasar el ratón */
+}
+
+/* Botón de scroll to top */
+.scroll-to-top {
+    position: fixed;
+    /* Fijo en la esquina inferior derecha */
+    bottom: 20px;
+    /* Espaciado desde el borde inferior */
+    right: 20px;
+    /* Espaciado desde el borde derecho */
+    background-color: rgb(149, 165, 166); 
+    /* Fondo verde */
+    color: var(--color-white);
+    /* Color del icono */
+    width: 50px;
+    /* Ancho del botón */
+    height: 50px;
+    /* Altura del botón */
+    border-radius: 50%;
+    /* Forma circular */
+    display: flex;
+    /* Centra el contenido horizontal y verticalmente */
+    align-items: center;
+    /* Alineación vertical centrada */
+    justify-content: center;
+    /* Alineación horizontal centrada */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Sombra sutil */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    /* Transiciones suaves */
+    text-decoration: none;
+    /* Quitar el subrayado del enlace */
+    z-index: 1000;
+    /* Asegurarse de que esté por encima de otros elementos */
+}
+
+.scroll-to-top:hover {
+    background-color: #4a5b3b;
+    /* Color verde más oscuro al pasar el cursor */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    /* Sombra más pronunciada al pasar el cursor */
+    transform: scale(1.1);
+    /* Aumentar el tamaño ligeramente al pasar el cursor */
+}
+
+.scroll-to-top i {
+    font-size: 24px;
+    /* Tamaño del icono */
+    transition: color 0.3s ease;
+    /* Transición suave para el color del icono */
+}
+
+.scroll-to-top:hover i {
+    color: var(--color-white);
+    /* Cambiar color del icono al pasar el cursor */
+}
+
+
+
+
+
+/* -------------------------------------------
+  -----------------------extractos------------------- */
+  .extractosCss {
+    width: 80%; /* Ajusta según tus necesidades */
+    height: auto; /* Mantiene la proporción */
+    object-fit: cover; /* Recorta la imagen para que se ajuste sin deformarse */
+    margin: 0 auto; /* Centra la imagen dentro del contenedor */
+    display: block; /* Asegura que el margen auto funcione correctamente */
+    border-radius: 8px; /* Añade esquinas redondeadas */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añade una sombra para un efecto visual mejorado */
+}
+
+
+.extractosCss {
+    transition: transform 0.3s ease, box-shadow 1.7s ease;
+    /* Añade sombra por defecto para un mejor contraste */
+    box-shadow: 0 4px 8px rgba(63, 188, 5, 0.2);
+    padding: 10px;
+}
+
+.extractosCss:hover {
+    /* transform: scale(1.05); */
+    /* Intensifica la sombra al pasar el ratón sobre la tarjeta */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Efectos específicos para la imagen */
+.extractosCss-img {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+
+}
+
+.extractosCss:hover .debitoCss {
+    /* Cambia la opacidad de la imagen y agrega un ligero giro */
+    opacity: 0.8;
+    transform: scale(1.1) rotate(2deg);
+}
+
+
+/* Estilo para el contenedor general del formulario */
+.upload-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Estilo para el área de arrastrar y soltar archivos */
+.drop-area {
+    border: 2px dashed #4a5b3b;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    background-color: #e6e9ed;
+    height: 300px;
+    /* Ajusta la altura para que sea más alta */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.drop-area p {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.drop-area:hover {
+    background-color: #c9d3d3;
+    border-color: #616f41;
+}
+
+.drop-area input[type="file"] {
+    display: none;
+}
+
+.drop-area label {
+    padding: 10px 20px;
+    background-color: #4a5b3b;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.drop-area label:hover {
+    background-color: #616f41;
+}
+
+/* Estilo para la lista de archivos seleccionados */
+#file-list {
+    margin-top: 20px;
+    list-style: none;
+    padding: 0;
+}
+
+#file-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Estilo para el botón de carga */
+.btn-primary {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #4a5b3b;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color:  rgb(149, 165, 166); 
+}
+
+/* Estilo para el contenedor del select personalizado */
+.custom-select-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.custom-select {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+    width: 100%;
+    appearance: none;
+    /* Elimina el estilo por defecto del select */
+    -webkit-appearance: none;
+    /* Para navegadores basados en Webkit */
+    -moz-appearance: none;
+    /* Para navegadores basados en Gecko */
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.custom-select:focus {
+    border-color: #4a5b3b;
+    box-shadow: 0 0 0 3px rgba(74, 91, 59, 0.1);
+    outline: none;
+}
+
+/* Estilo del contenedor cuando el select está enfocado */
+.custom-select-container::after {
+    content: '\u25BC';
+    /* Flecha hacia abajo */
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Cambia el color de la flecha cuando el select está enfocado */
+.custom-select:focus+.custom-select-container::after {
+    color: #4a5b3b;
+}
+
+/* Estilo del select cuando el contenedor está activo */
+.custom-select-container:focus-within::after {
+    color: #4a5b3b;
+}
+
+/* Estilo base para el label */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: rgb(149, 165, 166); 
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto de hover */
+.btn:hover {
+    background-color: rgb(149, 165, 166); 
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Efecto de foco */
+.btn:focus {
+    outline: none;
+}
+
+/* Efecto de clic */
+.btn:active {
+    background-color: #4a5b3b;
+    transform: scale(0.98);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Efecto de animación de fondo */
+.btn::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transition: transform 0.6s, opacity 0.6s;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+}
+
+.btn:hover::before {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+/* Estilo del contenedor */
+.container {
+    display: flex;
+    flex-direction: column;
+    /* Disposición vertical */
+    align-items: center;
+    /* Centra horizontalmente */
+    justify-content: center;
+    /* Centra verticalmente */
+    /* height: 100vh; */
+    /* Ocupa el 100% de la altura de la ventana */
+    text-align: center;
+    /* Centra el texto dentro de los elementos */
+}
+
+/* Estilo para el div de la lista de archivos */
+#file-list {
+    margin-bottom: 20px;
+    /* Espacio entre la lista de archivos y el botón */
+}
+
+/* Estilo base del botón */
+.btn {
+    background-color:  rgb(149, 165, 166); 
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+/* Efecto de hover */
+.btn:hover {
+    background-color: #5a6c45;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Efecto de clic */
+.btn:active {
+    background-color:  rgb(149, 165, 166); 
+    transform: scale(0.98);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+/* CSS personalizado para la tabla */
+#tablaTPT {
+    background-color:  rgb(149, 165, 166); 
+}
+
+#tablaTPT th,
+#tablaTPT td {
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.9em; /* ajusta el tamaño de la fuente aquí */
+}
+
+#tablaTPT thead th {
+    background-color: rgb(149, 165, 166); 
+    color: #ffffff; /* puedes cambiar el color del texto de la cabecera si lo deseas */
+}
+
+#tablaTPT tbody td {
+    background-color:#ffffff;
+}
+
+.subtitulo-tienda {
+    color: black; /* Cambia el color del texto a negro */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Agrega un sombreado al texto */
+    font-size: 20px;
+    margin: 10px 0; /* Agrega un margen superior e inferior para separar visualmente el título */
+}
+
+.cover-container {
+    position: relative;
+    width: 100%;
+    height: 300px; /* Aumenta la altura del contenedor */
+    background-color: white; /* Fondo blanco */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    
+}
+
+.cover-content {
+    text-align: center;
+    width: 100%;
+    height: 100%;
+}
+
+.cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Asegura que la imagen cubra todo el contenedor sin distorsión */
+    
+}
+
+.cover-title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #000; /* Color del texto */
+    background-color: rgba(255, 255, 255, 0.7); /* Fondo blanco semi-transparente */
+    padding: 10px 20px; /* Espaciado alrededor del título */
+    font-size: 2em; /* Tamaño del texto */
+    font-weight: bold; /* Hace que el texto sea más grueso */
+   
+}
+
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* Se asegura de que el contenedor ocupe el ancho completo */
+}
+
+
+/* css de tablas cb */
+
+/* Estilos para la tabla principal */
+#main-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  #main-table thead {
+    background-color: #007bff; /* Color de fondo del encabezado */
+    color: white; /* Color del texto */
+    text-align: center; /* Centrar el texto */
+  }
+  
+  #main-table th, #main-table td {
+    border: 1px solid #ddd; /* Borde de las celdas */
+    padding: 12px; /* Espaciado interno de las celdas */
+  }
+  
+  #main-table tr:nth-child(even) {
+    background-color: #f2f2f2; /* Color de fondo de las filas pares */
+  }
+  
+  #main-table tr:hover {
+    background-color: #e9ecef; /* Color de fondo al pasar el ratón */
+  }
+  
+  /* Estilos del modal */
+  .modal-content {
+    border-radius: 10px; /* Bordes redondeados del modal */
+  }
+  
+  .modal-header {
+    background-color: #007bff; /* Color de fondo del encabezado del modal */
+    color: white; /* Color del texto del encabezado */
+  }
+  
+  .modal-footer {
+    background-color: #f9f9f9; /* Color de fondo del pie del modal */
+  }
+  
+  .modal-body {
+    padding: 20px; /* Espaciado interno del cuerpo del modal */
+  }
+  
+  .table {
+    margin-bottom: 0; /* Elimina el margen inferior de la tabla */
+  }
+  
+  /* Botones dentro del modal */
+  .btn-primary {
+    background-color: #007bff; /* Color de fondo del botón primario */
+    border-color: #007bff; /* Color del borde del botón primario */
+  }
+  
+  .btn-secondary {
+    background-color: #6c757d; /* Color de fondo del botón secundario */
+    border-color: #6c757d; /* Color del borde del botón secundario */
+  }
+  
+  /* Ajustes para los formularios dentro del modal */
+  .form-control {
+    margin-bottom: 1rem; /* Margen inferior para los campos de formulario */
+  }
+  
+
+
+  .tabla-transacciones {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tabla-transacciones th,
+.tabla-transacciones td {
+    padding: 12px;
+    text-align: center;
+}
+
+.tabla-transacciones th {
+    background-color:#91a0b3;
+    color: #000000;
+    font-weight: bold;
+}
+
+.tabla-transacciones tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.tabla-transacciones tr:hover {
+    background-color: #e6e9ed;
+}
+
+.tabla-transacciones td {
+    border-bottom: 1px solid #ddd;
+}
+
+
+/* -------------------------------------------
+  -----------------------extractos modales------------------- */
+  .amex-modal {
+    background-color: hsl(70, 6%, 93%);
+    color: #ff0303b5; /* Letras blancas */
+    padding: 20px;
+    border-radius: 10px; /* Esquinas redondeadas */
+    text-align: center; /* Centrar el texto */
+
+    /* Aplicar sombra de texto amarillo */
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.692), 0 0 20px rgba(88, 88, 14, 0.6);
+    
+    /* Tipografía personalizada */
+    font-family: 'Arial', sans-serif;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.amex-modal-title {
+    margin-bottom: 10px;
+}
+
+  .button-container {
+    display: flex;
+    gap: 10px; /* Espacio entre botones */
+    justify-content: center; /* Centrar botones horizontalmente */
+    margin: 20px 0; /* Espacio superior e inferior */
+}
+
+/* Estilos para botones */
+.button-container .btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.3s;
+}
+
+.button-container .btn-primary {
+    background-color:  hsl(55, 85%, 41%);
+    color: #000000;
+}
+
+.button-container .btn-primary:hover {
+    background-color:hsl(70, 6%, 93%); 
+    transform: scale(1.05);
+    color: #ffffff;
+    border-radius: 10px; 
+}
+
+.button-container .btn-primary:active {
+    transform: scale(0.95);
+}
+
+/* Estilos para la tabla "table-start" */
+.table-start {
+    margin-top: 1rem;
+}
+
+.table-start-datatable {
+    background-color: #ff0303b5; /* Fondo de la tabla */
+}
+
+.table-start-datatable thead th {
+    background-color: hsla(0, 4%, 31%, 0.379); 
+    color: #000000; /* Color del texto */
+    font-weight: bold;
+    text-align: center;
+    padding: 0.75rem;
+}
+
+.table-start-datatable td, .table-start-datatable th {
+    border: 1px solid #dee2e6; /* Color del borde */
+    padding: 0.75rem;
+    text-align: center;
+}
+
+.table-start-datatable tbody tr:hover {
+    background-color: #cbddd1; /* Color de fondo al pasar el ratón */
+}
+
+/* Estilos para la tabla "table-excel" */
+.table-excel {
+    margin-top: 2rem;
+}
+
+.table-excel-datatable {
+    background-color: #ffffff; /* Fondo de la tabla */
+}
+
+.table-excel-datatable thead th {
+    background-color: #d3d3d3; /* Color de fondo para los encabezados */
+    color: #000; /* Color del texto */
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    padding: 0.75rem;
+}
+
+.table-excel-datatable tbody td {
+    border: 1px solid #dee2e6; /* Color del borde */
+    padding: 0.75rem;
+    text-align: center;
+}
+
+.table-excel-datatable tbody tr:hover {
+    background-color: #e0e0e0; /* Color de fondo al pasar el ratón */
+}
+
+.table-group-divider tr {
+    border-top: 1px solid #dee2e6; /* Borde superior de cada fila */
+}
+
+/* Estilos para los botones */
+.button-container {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.btn-transfer {
+    background-color: #28a745; /* Color de fondo */
+    border-color: #28a745; /* Color del borde */
+}
+
+.btn-transfer:hover {
+    background-color: #218838; /* Color de fondo al pasar el ratón */
+}
+
+.btn-submit {
+    background-color: #dc3545; /* Color de fondo */
+    border-color: #dc3545; /* Color del borde */
+}
+
+.btn-submit:hover {
+    background-color: #c82333; /* Color de fondo al pasar el ratón */
+}
+
+.bbva-modal {
+    background-color: hsla(224, 32%, 86%, 0.58);
+    color: #0318ff90; /* Letras blancas */
+    padding: 20px;
+    border-radius: 10px; /* Esquinas redondeadas */
+    text-align: center; /* Centrar el texto */
+
+    /* Aplicar sombra de texto amarillo */
+    text-shadow: 0 0 10px rgba(2, 100, 227, 0.422), 0 0 20px rgba(88, 88, 14, 0.6);
+    
+    /* Tipografía personalizada */
+    font-family: 'Arial', sans-serif;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.bbva-modal-title {
+    margin-bottom: 10px;
+}
+
+.azteca-modal {
+    background-color: hsla(147, 39%, 77%, 0.473);
+    color: #0a652a90; /* Letras blancas */
+    padding: 20px;
+    border-radius: 10px; /* Esquinas redondeadas */
+    text-align: center; /* Centrar el texto */
+
+    /* Aplicar sombra de texto amarillo */
+    text-shadow: 0 0 10px rgba(32, 51, 39, 0.557), 0 0 20px rgba(88, 88, 14, 0.6);
+    
+    /* Tipografía personalizada */
+    font-family: 'Arial', sans-serif;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.azteca-modal-title {
+    margin-bottom: 10px;
+}

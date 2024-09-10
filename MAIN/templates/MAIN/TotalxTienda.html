@@ -1,0 +1,278 @@
+{% extends 'extracpanda/base2.html' %}
+<!-- {% block titulo %} index Mobonet {% endblock titulo %} -->
+{% load static %}
+{% block contenido%}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla Expandible con Bootstrap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+    <style>
+        .collapse-row {
+            background-color: #f9f9f9;
+        }
+        .sub-menu {
+            padding: 10px;
+        }
+        .modal-custom {
+            max-width: 90%;
+            width: auto;
+        }
+        .modal-custom .modal-content {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Consolidacion a detalle</h2>
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
+            <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio">
+        </div>
+        <div class="col-md-3">
+            <label for="fecha_fin" class="form-label">Fecha Fin</label>
+            <input type="date" class="form-control" id="fecha_fin" name="fecha_fin">
+        </div>
+        <div class="col-md-3">
+            <label for="no_sucursal" class="form-label">No Sucursal</label>
+            <input type="text" class="form-control" id="no_sucursal" name="no_sucursal">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">&nbsp;</label>
+            <button id="filtrar" class="btn btn-primary form-control">Filtrar</button>
+        </div>
+    </div>
+    <table id="tabla-registros" class="table table-hover">
+        <thead>
+        <tr>
+            <th>No Sucursal</th>
+            <th>Sucursal</th>
+            <th>Total Ex</th>
+            <th>MPT</th>
+            <th>NuCuenta</th>
+            <th>Fecha Op</th>
+            <th>Ref ampl</th>
+            <th>Banco</th>
+            <th>Afiliación BBVA</th>
+            <th>Venta Afiliación</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="editarModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editarModalLabel">Detalles del Registro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Tabla Izquierda</h6>
+                        <table class="table" id="tabla-izquierda">
+                            <thead>
+                            <tr>
+                                <th><input type="checkbox" id="checkAllIzquierda" ></th>
+                                <th>Num Autorizacion</th>
+                                <th>No Sucursal</th>
+                                <th>Monto Pagado</th>
+                                <th>Forma Pago ID</th>
+                                <th>Fecha</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Tabla Derecha</h6>
+                        <table class="table" id="tabla-derecha">
+                            <thead>
+                            <tr>
+                                <th><input type="checkbox" id="checkAllDerecha" ></th>
+                                <th>No Auto</th>
+                                <th>No Sucursal</th>
+                                <th>Importe</th>
+                                <th>Fecha</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bs5-lightbox@1.8.3/dist/index.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        var groupedData;
+        var table = $('#tabla-registros').DataTable({
+            "paging": true,
+            "searching": false,
+            "info": false,
+            "ajax": {
+                "url": "{% url 'MAIN:filtro' %}",
+                "dataSrc": function(json) {
+                    if (json.data && json.grouped_data) {
+                        groupedData = json.grouped_data; 
+                        return json.data;
+                    } else {
+                        console.error("JSON recibido no tiene la estructura esperada:", json);
+                        return [];
+                    }
+                },
+                "data": function(d) {
+                    d.fecha_inicio = $('#fecha_inicio').val();
+                    d.fecha_fin = $('#fecha_fin').val();
+                    d.no_sucursal = $('#no_sucursal').val();
+                }
+            },
+            "columns": [
+                { "data": 0 },
+                { "data": 1 },
+                { "data": 2 },
+                { "data": 3 },
+                { "data": 4 },
+                { "data": 5 },
+                { "data": 6 },
+                { "data": 7 },
+                { "data": 8 },
+                { "data": 9 }
+            ]
+        });
+
+        $('#filtrar').on('click', function() {
+            table.ajax.reload();
+        });
+
+        $('#tabla-registros tbody').on('click', 'tr', function() {
+            var tr = $(this).closest('tr');
+            var row = table.row(tr);
+
+            if (row.data() !== undefined) {
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                } else {
+                    var data = row.data();
+                    var no_sucursal = data[0];
+
+                    if (groupedData && groupedData[no_sucursal]) {
+                        var childRows = groupedData[no_sucursal];
+
+                        if (childRows.length > 1) {
+                            var content = `
+                                <div class="sub-menu">
+                                    <table class="table">
+                                       
+                                        <tbody>
+                                            ${childRows.slice(1).map(dato => `
+                                                <tr>
+                                                    <td>${dato[0]}</td>
+                                                    <td>${dato[1]}</td>
+                                                    <td>${dato[2]}</td>
+                                                    <td>${dato[3]}</td>
+                                                    <td>${dato[4]}</td>
+                                                    <td>${dato[5]}</td>
+                                                    <td>${dato[6]}</td>
+                                                    <td>${dato[7]}</td>
+                                                    <td>${dato[8]}</td>
+                                                    <td>${dato[9]}</td>
+                                                    <td><button type="button" class="btn btn-primary editar-btn" data-no_sucursal="${dato[0]}" data-fecha="${dato[5]}">Editar</button></td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
+
+                            row.child(content).show();
+                            tr.addClass('shown');
+                        }
+                    }
+                }
+            }
+        });
+
+        $('#tabla-registros tbody').on('click', '.editar-btn', function() {
+            var no_sucursal = $(this).data('no_sucursal');
+            var fecha = $(this).data('fecha');
+
+            if (no_sucursal && fecha) {
+                $.ajax({
+                    url: "{% url 'MAIN:VD' %}",
+                    method: "GET",
+                    data: { no_sucursal: no_sucursal, fecha: fecha },
+                    success: function(response) {
+                        if (response.data_ventas && response.data_detalle) {
+                            var tablaIzquierdaBody = $('#tabla-izquierda tbody');
+                            var tablaDerechaBody = $('#tabla-derecha tbody');
+
+                            tablaIzquierdaBody.empty();
+                            tablaDerechaBody.empty();
+
+                            response.data_ventas.forEach(function(item) {
+                                tablaIzquierdaBody.append(`
+                                    <tr>
+                                        <td><input type="checkbox" class="row-checkbox"></td>
+                                        <td>${item.num_autorizacion}</td>
+                                        <td>${item.no_sucursal}</td>
+                                        <td>${item.monto_pagado}</td>
+                                        <td>${item.forma_pago_id}</td>
+                                        <td>${item.fecha}</td>
+                                    </tr>
+                                `);
+                            });
+
+                            response.data_detalle.forEach(function(item) {
+                                tablaDerechaBody.append(`
+                                    <tr>
+                                        <td><input type="checkbox" class="row-checkbox"></td>
+                                        <td>${item.No_auto}</td>
+                                        <td>${item.no_sucursal}</td>
+                                        <td>${item.Importe}</td>
+                                        <td>${item.Fecha}</td>
+                                    </tr>
+                                `);
+                            });
+
+                            $('#editarModal').modal('show');
+                        } else {
+                            console.warn("No se encontraron datos para la sucursal y fecha seleccionadas.");
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error al obtener los datos del modal:", xhr, status, error);
+                    }
+                });
+            } else {
+                console.warn("No se encontraron datos para el botón editar.");
+            }
+        });
+    });
+</script>
+</body>
+</html>
+{% endblock %}

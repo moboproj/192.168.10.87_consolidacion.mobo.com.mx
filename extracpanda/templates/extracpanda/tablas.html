@@ -1,0 +1,210 @@
+{% extends 'extracpanda/base2.html' %}
+{% load static %}
+{% block contenido %}
+<body class="container">
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+
+    .selected {
+      background-color: #36c306fc;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    .button-header {
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    /* Estilos adicionales para hacer la tabla responsiva */
+    @media (max-width: 768px) {
+      .container {
+        margin-top: 20px;
+      }
+
+      table {
+        font-size: 12px;
+      }
+
+      th, td {
+        padding: 5px;
+      }
+    }
+  </style>
+<h2>Tabla "Inicio"</h2>
+<table id="tableInicio" class="table table-hover my-datatable">
+  <thead>
+    <tr>
+      <th scope="col" class="text-nowrap">Banco</th>
+      <th scope="col" class="text-nowrap">Fecha Operacion</th>
+      <th scope="col" class="text-nowrap">Tipo de Transacción</th>
+      <th scope="col" class="text-nowrap">Referencia Ampliada</th>
+      <th scope="col" class="text-nowrap">No. Campo de Llave</th>
+      <th scope="col" class="text-nowrap">Abono</th>
+      <th scope="col" class="text-nowrap">Cargo</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id="rowInicio">
+      <td class="text-nowrap"></td>
+      <td class="text-nowrap"></td>
+      <td class="text-nowrap"></td>
+      <td class="text-nowrap"></td>
+      <td class="text-nowrap"></td>
+      <td class="text-nowrap"></td>
+      <td class="text-nowrap"></td>
+    </tr>
+  </tbody>
+</table>
+<button class="btn btn-primary" onclick="transferSelectedColumns()">Transferir Columnas Seleccionadas</button>
+<!-- <button class="btn btn-primary" onclick="manualOrderInput()">Establecer Orden Manual</button> -->
+<button id="enviarInfoBtn" class="btn btn-primary" onclick="enviarInfo()">Enviar Info</button>
+<h2>Tabla "Excel"</h2>
+<table id="tableExcel" class="table table-dark my-datatable">
+  <thead>
+    <tr>
+      {% for column in columns %}
+        <th scope="col" class="button-header" onclick="selectColumn(this)">{{ column }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+      <tr>
+        {% for column, value in row.items %}
+          <td>{{ value }}</td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+  </table>
+<script>
+   const selectedColumns = [];
+   function selectColumn(column) {
+     column.classList.toggle("selected");
+     const columnName = column.innerText;
+   
+     // Verificar si la columna ya está seleccionada
+     const index = selectedColumns.indexOf(columnName);
+     if (index === -1) {
+       // Si no está seleccionada, agregarla a la lista
+       selectedColumns.push(columnName);
+     } else {
+       // Si está seleccionada, quitarla de la lista y limpiar el nombre en la fila de "Inicio"
+       selectedColumns.splice(index, 1);
+     }
+     // Obtener la fila de "Inicio"
+     const rowInicio = document.getElementById("rowInicio");
+   
+     // Limpiar todas las celdas en la fila de "Inicio"
+     Array.from(rowInicio.cells).forEach((cell, index) => {
+       if (selectedColumns[index]) {
+         cell.innerText = selectedColumns[index];
+       } else {
+         cell.innerText = "";  // Si no hay valor para la columna, dejar en blanco
+       }
+     });
+     console.log("Columnas seleccionadas:", selectedColumns);
+   }
+   
+     // buena idea aun no funciona 
+     function manualOrderInput() {
+         // Cuadro de diálogo para que el usuario ingrese el orden manualmente
+         const orderInput = prompt("Ingrese el orden de las columnas separadas por comas (por ejemplo, Fecha,Referencia,Concepto):");
+   
+         if (orderInput) {
+           // Separar las columnas ingresadas por comas y asignarlas a la fila de "Inicio"
+           const rowInicio = document.getElementById("rowInicio");
+           const orderedColumns = orderInput.split(",").map(column => column.trim());
+   
+           selectedColumns.length = 0;
+           orderedColumns.forEach((column, index) => {
+             rowInicio.cells[index].innerText = column;
+             selectedColumns.push(column);
+           });
+   
+           console.log("Columnas seleccionadas:", selectedColumns);
+         }
+       }
+   
+   
+       function transferSelectedColumns() {
+         const tableExcel = document.getElementById("tableExcel");
+         const droppedRow = document.getElementById("rowInicio");
+         const cells = droppedRow.cells;
+     
+         const selectedIndexes = [];
+         selectedColumns.forEach(columnName => {
+           const index = Array.from(tableExcel.rows[0].cells).findIndex(cell => cell.innerText === columnName);
+           selectedIndexes.push(index);
+         });
+     
+         // copia los valores de las columnas seleccionadas
+         selectedIndexes.forEach((index, targetIndex) => {
+           const sourceCells = Array.from(tableExcel.rows).slice(1).map(row => row.cells[index]);
+           const targetCell = cells[targetIndex];
+           targetCell.innerText = sourceCells.map(cell => cell.innerText).join('\n');
+          
+         });
+       }
+
+  function enviarInfo() {
+    const tableInicio = document.getElementById("tableInicio");
+    const rowInicio = tableInicio.rows[1]; // Obtén la fila de datos
+
+    // Aquí puedes construir el objeto con los datos que deseas enviar
+    const dataToSend = {
+        'Banco': rowInicio.cells[0].innerText.trim(),
+        'Fecha Operacion': rowInicio.cells[1].innerText.trim(),
+        'Tipo de Transacción': rowInicio.cells[2].innerText.trim(),
+        'Referencia Ampliada': rowInicio.cells[3].innerText.trim(),
+        'No. Campo de Llave': rowInicio.cells[4].innerText.trim(),
+        'Abono': rowInicio.cells[5].innerText.trim(),
+        'Cargo': rowInicio.cells[6].innerText.trim(),
+    };
+
+    // Realiza una solicitud AJAX usando fetch
+    fetch('{% url "extracpanda:enviar_route" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),  // Asegúrate de tener la función getCookie() definida
+        },
+        body: JSON.stringify(dataToSend),
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Maneja la respuesta del servidor aquí
+        console.log('Respuesta del servidor:', data);
+        // Puedes mostrar mensajes, actualizar la interfaz de usuario, etc.
+    })
+    .catch(error => {
+        // Maneja los errores aquí
+        console.error('Error al enviar la solicitud:', error);
+    });
+}
+
+// Función para obtener el valor de la cookie CSRF
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+     </script>
+  {% endblock %}
+  </body>
