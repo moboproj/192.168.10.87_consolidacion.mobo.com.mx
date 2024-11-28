@@ -1,97 +1,208 @@
 {% extends 'extracpanda/base2.html' %}
-{% block contenido  %} 
+{% block contenido %}
 {% load static %}
 
 <body>
+  <div class="cover-container">
+    <div class="cover-content">
+      <img
+        class="cover-img"
+        src="{% static 'admin/images/jeje.jpg' %}"
+        alt="extracto"
+      />
+      <h1 class="cover-title">Extractos Bancarios</h1>
+    </div>
+  </div>
 
-    <div class="cover-container">
-        <div class="cover-content">
-          <img
-            class="cover-img"
-            src="{% static 'admin/images/jeje.jpg' %}"
-            alt="extracto"
-          />
-          <h1 class="cover-title">Extractos Bancarios</h1>
-        </div>
-      </div>
-
-  <form id="uploadForm" action="{%url 'extracpanda:update_option'%}" method="post" enctype="multipart/form-data">
+  <form id="uploadForm" action="{% url 'extracpanda:update_option' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
-   
-  <!-- Menú para seleccionar tipo de operación -->
-  <div class="container-sm  mt-4 bg-white">
-  <div class="form-group">
-    <label for="tipo_operacion">Seleccione el tipo de operación:</label>
-    <select class="form-control" name="tipo_operacion" id="tipo_operacion" onchange="toggleOptions()">
-        <option value="">Opciones</option>
-        <option value="efectivo">Efectivo</option>
-        <option value="tarjeta">Tarjeta</option>
-        <option value="amexplus">Amex Complemento</option>
-    </select>
-</div>
+    <!-- Menú para seleccionar tipo de operación -->
+    <div class="container-sm mt-4 bg-white">
+      <div class="form-group">
+        <label for="tipo_operacion">Seleccione el tipo de operación:</label>
+        <select class="form-control" name="tipo_operacion" id="tipo_operacion" onchange="toggleOptions()">
+          <option value="">Opciones</option>
+          <option value="efectivo">Efectivo</option>
+          <option value="tarjeta">Tarjeta</option>
+          <option value="amexplus">Amex Complemento</option>
+        </select>
+      </div>
 
-<div class="form-group" id="efectivo_options" style="display: none;">
-    <label for="excel_format_efectivo">Seleccione el formato para Efectivo:</label>
-    <select class="form-control" name="excel_format_efectivo" id="excel_format_efectivo">
-        <option value="">Opciones para Efectivo</option>
-        <option value="opcion_efectivo_1">Azteca (9774)</option>
-        <!-- más opciones -->
-    </select>
-</div>
+      <div class="form-group" id="efectivo_options" style="display: none;">
+        <label for="excel_format_efectivo">Seleccione el formato para Efectivo:</label>
+        <select class="form-control" name="excel_format_efectivo" id="excel_format_efectivo">
+          <option value=" ">Opciones para Efectivo</option>
+          <option value="opcion_efectivo_1">Azteca (9774)</option>
+          <option value="opcion_efectivo_2">BBVA (9530)</option>
+          <option value="opcion_efectivo_3">BBVA (9475)</option>
+          <option value="opcion_efectivo_4">Coppel (9391)</option>
+          <option value="opcion_efectivo_5">Santander (3790)</option>
+          <option value="opcion_efectivo_6">Cibanco (7403)</option>
+          <option value="opcion_efectivo_7">HSBC (3260)</option>
+          <option value="opcion_efectivo_8">Inbursa (6337)</option>
+          <option value="opcion_efectivo_9">Banamex (0407)</option>
+          <option value="opcion_efectivo_10">Scotiabank (2883)</option>
+          <option value="opcion_efectivo_11">BBVA (9557)</option>
+          <option value="opcion_efectivo_12">Banamex (7867)</option>
+        </select>
+      </div>
 
-<div class="form-group" id="tarjeta_options" style="display: none;">
-    <label for="excel_format_tarjeta">Seleccione el formato para Tarjeta:</label>
-    <select class="form-control" name="excel_format_tarjeta" id="excel_format_tarjeta">
-        <option value="">Opciones para Tarjeta</option>
-        <option value="opcion_tarjeta_1">BBVA Y Amex</option>
-        <!-- más opciones -->
-    </select>
-</div>
+      <div class="form-group" id="tarjeta_options" style="display: none;">
+        <label for="excel_format_tarjeta">Seleccione el formato para Tarjeta:</label>
+        <select class="form-control" name="excel_format_tarjeta" id="excel_format_tarjeta">
+          <option value=" ">Opciones para Tarjeta</option>
+          <option value="opcion_tarjeta_1">BBVA Y Amex</option>
+          <option value="opcion_tarjeta_2">HSBC</option>
+        </select>
+      </div>
 
-<div class="form-group" id="amex_extra" style="display: none;">
-    <label for="amex">Complemento Amex</label>
-    <select class="form-control" name="amex" id="amex">
-        <option value="">Opción</option>
-        <option value="amex_plus">Complemento Amex</option>
-    </select>
-</div>
+      <div class="form-group" id="amex_extra" style="display: none;">
+        <label for="amex">Complemento Amex</label>
+        <select class="form-control" name="amex" id="amex">
+          <option value="">Opción</option>
+          <option value="amex_plus">Complemento Amex</option>
+        </select>
+      </div>
 
-<!-- Área de arrastrar y soltar archivos -->
-<div class="drop-area" id="drop-area">
-    <p>Arrastra y suelta tus archivos aquí o</p>
-    <input type="file" id="fileElem" name="file" multiple onchange="handleFiles(this.files)">
-    <label class="btn" for="fileElem">Selecciona tus archivos</label>
-  </div>
+      <!-- Área de arrastrar y soltar archivos -->
+      <div class="drop-area" id="drop-area" ondrop="handleDrop(event)" ondragover="handleDragOver(event)">
+       
+        <input type="file" id="fileElem" name="file" multiple onchange="handleFiles(this.files)">
+        <label class="btn" for="fileElem">Selecciona tus archivos</label>
+      </div>
 
-  <div id="file-list"></div>
-  <div class="button-container">
-      <button type="submit" class="btn btn-outline-secondary btn-lg btn-block">Cargar archivo</button>
-  </div>
-  
- 
+      <ul id="file-list"></ul>
 
-<script>
-function toggleOptions() {
-const tipoOperacion = document.getElementById('tipo_operacion').value;
-document.getElementById('efectivo_options').style.display = tipoOperacion === 'efectivo' ? 'block' : 'none';
-document.getElementById('tarjeta_options').style.display = tipoOperacion === 'tarjeta' ? 'block' : 'none';
-document.getElementById('amex_extra').style.display = tipoOperacion === 'amexplus' ? 'block' : 'none';
-}
+      <div class="button-container">
+        <button type="submit" class="btn btn-outline-secondary btn-lg btn-block">Cargar archivo</button>
+      </div>
+    </div>
+  </form>
 
-function handleFiles(files) {
-const fileList = document.getElementById('file-list');
-fileList.innerHTML = '';
-[...files].forEach(file => {
-    const li = document.createElement('li');
-    li.textContent = file.name;
-    fileList.appendChild(li);
-});
-}
-</script>
-</div>
-             <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-        </body>
-    </html>
-{% endblock %}
+  <style>
+    .drop-area {
+      border: 2px dashed #666c74;
+      border-radius: 5px;
+      padding: 20px;
+      text-align: center;
+      margin: 20px 0;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .drop-area:hover {
+      background-color: #f1f1f1;
+    }
+
+    .drop-area input[type="file"] {
+      display: none;
+    }
+
+    .drop-area p {
+      margin: 0;
+      font-size: 1.2em;
+      color: #555;
+    }
+
+    .drop-area label {
+      color: white;
+      background-color: #5b6269;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .drop-area label:hover {
+      background-color: #5c646d;
+    }
+
+    #file-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 10px;
+    }
+
+    #file-list li {
+      margin: 5px 0;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      background: #f9f9f9;
+      font-size: 0.9em;
+      color: #333;
+    }
+
+    .button-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: 1px solid #878c91;
+      background-color: #787b7e;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #56585a  !important;
+    }
+
+    .btn-outline-secondary {
+      border: 1px solid #6c757d  !important;
+      background-color: white  !important;
+      color: #6c757d;
+    }
+
+    .btn-outline-secondary:hover {
+      background-color: #6c757d  !important;
+      color: white;
+    }
+  </style>
+
+  <script>
+    function toggleOptions() {
+      const tipoOperacion = document.getElementById('tipo_operacion').value;
+      document.getElementById('efectivo_options').style.display = tipoOperacion === 'efectivo' ? 'block' : 'none';
+      document.getElementById('tarjeta_options').style.display = tipoOperacion === 'tarjeta' ? 'block' : 'none';
+      document.getElementById('amex_extra').style.display = tipoOperacion === 'amexplus' ? 'block' : 'none';
+    }
+
+    function handleDragOver(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const dropArea = document.getElementById('drop-area');
+      dropArea.style.backgroundColor = '#e9ecef';
+    }
+
+    function handleDrop(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const dropArea = document.getElementById('drop-area');
+      dropArea.style.backgroundColor = '';
+      const files = event.dataTransfer.files;
+      handleFiles(files);
+    }
+
+    function handleFiles(files) {
+      const fileList = document.getElementById('file-list');
+      fileList.innerHTML = '';
+      [...files].forEach((file) => {
+        const li = document.createElement('li');
+        li.textContent = file.name;
+        fileList.appendChild(li);
+      });
+    }
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </body>
+{% endblock %}

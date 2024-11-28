@@ -1,4 +1,5 @@
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection, transaction
 from datetime import date, datetime, timedelta
@@ -15,6 +16,14 @@ import traceback
 import logging
 import json
 import re
+import openpyxl
+from openpyxl.styles import PatternFill, Font
+from decimal import Decimal
+import datetime
+import io
+from datetime import datetime, timedelta
+
+
 db = pymysql.connect(host='40.124.171.87', user='jesanchez', password='moboweb5226', database='consolidacion', cursorclass=cursors.DictCursor )
 cursor = db.cursor()
 @csrf_exempt
@@ -186,7 +195,6 @@ def nomach(request):
       
 @csrf_exempt
 def CONSOLIDACIONTIPO(request):
-    
     fecha_extrac = request.GET.get('fecextrac')
     FecextFin = request.GET.get('FecextFin')
 
@@ -194,38 +202,33 @@ def CONSOLIDACIONTIPO(request):
         return JsonResponse({'error': 'No se proporcionó una fecha válida.'}, status=400)
 
     try:
-        # Convertir la cadena de fecha original en un objeto datetime
-        fecha_original = datetime.strptime(fecha_extrac, '%Y-%m-%d')
-        # Restar un día para obtener la fecha reducida
-        fecha_reducida = fecha_original - timedelta(days=1)
-        # Convertir de nuevo a cadena en el mismo formato
-        fecha_reducida_str = fecha_reducida.strftime('%Y-%m-%d')
-        #--------------------------------------------------------------
-        # Convertir la cadena de fecha original en un objeto datetime
-        fecha_orfn = datetime.strptime(FecextFin, '%Y-%m-%d')
-        # Restar un día para obtener la fecha reducida
-        fecha_redfin = fecha_orfn - timedelta(days=1)
-        # Convertir de nuevo a cadena en el mismo formato
-        fecha_redfin_str = fecha_redfin.strftime('%Y-%m-%d')
+        # Comprobación de lunes o fechas especiales
+        resultados = check_if_monday(fecha_extrac, FecextFin)
+    
+        if resultados:
+            Fec_1, Fec_2 = resultados  # Desempaquetar los resultados de la función
+            print(f"Resultados: Fec_1: {Fec_1}, Fec_2: {Fec_2}")
+        
+        # Conectar a la base de datos
         conexion = conectar_bd()
         if not conexion:
             return JsonResponse({'error': 'No se pudo establecer la conexión a la base de datos.'}, status=500)
 
-        # Consulta con la fecha original
+        # Consulta con las fechas ajustadas
         with conexion.cursor() as cursor:
-            query_original = "CALL Porsentaje_CB(%s, %s, 0, 1);"
-            cursor.execute(query_original, [fecha_extrac,FecextFin])
+            query_original = "CALL Porsentaje_CB(%s, %s, NULL, NULL, 0, 1);"
+            cursor.execute(query_original, [Fec_1, Fec_2])
             datos_original = cursor.fetchall()
-            print(datos_original)
-        # Consulta con la fecha reducida
+
+        # Consulta con las fechas originales
         with conexion.cursor() as cursor:
-            query_reducida = "CALL Porsentaje_CB(%s, %s, NULL, 3);"
-            cursor.execute(query_reducida, [fecha_reducida_str, fecha_redfin_str])
+            query_reducida = "CALL Porsentaje_CB(%s, %s, NULL, NULL, NULL, 3);"
+            cursor.execute(query_reducida, [fecha_extrac, FecextFin])
             datos_reducida = cursor.fetchall()
 
         conexion.close()
 
-        # Paginación para ambas consultas (opcional, si deseas paginar ambas)
+        # Paginación de los resultados de la primera consulta
         paginator_original = Paginator(datos_original, 100)
         page_original = request.GET.get('page_original')
         try:
@@ -235,6 +238,7 @@ def CONSOLIDACIONTIPO(request):
         except EmptyPage:
             datos_paginados_original = paginator_original.page(paginator_original.num_pages)
 
+        # Paginación de los resultados de la segunda consulta
         paginator_reducida = Paginator(datos_reducida, 100)
         page_reducida = request.GET.get('page_reducida')
         try:
@@ -244,6 +248,7 @@ def CONSOLIDACIONTIPO(request):
         except EmptyPage:
             datos_paginados_reducida = paginator_reducida.page(paginator_reducida.num_pages)
 
+        # Devolver los datos en formato JSON
         return JsonResponse({
             'datos_original': list(datos_paginados_original),
             'datos_reducida': list(datos_paginados_reducida)
@@ -558,8 +563,15 @@ def ventas_detalles_v2(request):
         fecha_inicio = request.GET.get('fecha_inicio')
         fecha_fin = request.GET.get('fecha_fin')
         tipoTransaccion = request.GET.get('tipo_transaccion')
-
-        if(tipoTransaccion == 'Tarjeta'):
+        resultados = check_if_monday(fecha_inicio, fecha_fin)
+        
+        if resultados:
+            Fec_1, Fec_2 = resultados  # Desempaquetar los resultados
+            print("Resultados desde fec_mandar:")
+            print(f"Fec_1: {Fec_1}, Fec_2: {Fec_2}")
+            
+            
+        if(tipoTransaccion == 'Tarjetas'):
             if not fecha_inicio:
                 raise ValueError("Fecha de inicio es requerida")
 
@@ -578,7 +590,8 @@ def ventas_detalles_v2(request):
             if conexion:
                 with conexion.cursor() as cursor:
                     query_ventas = "SELECT * FROM Ventas_modal WHERE fecha BETWEEN %s AND %s AND sucursal = %s order by fecha asc"
-                    cursor.execute(query_ventas, [fecha, fecha2, no_sucursal])
+                    cursor.execute(query_ventas, [Fec_1, Fec_2, no_sucursal])
+                    print(f"cursor: {cursor.execute}")
                     registro_ventas = cursor.fetchall()
                     data_ventas = []
                     for registro in registro_ventas:
@@ -592,7 +605,8 @@ def ventas_detalles_v2(request):
                             'Origen': registro['Origen']
                         }
                         data_ventas.append(registro_json)
-                    
+                    print(f"data_ventas: {data_ventas}")
+
                     query_detalle = "SELECT * FROM Union_Extractos WHERE Fecha_Op BETWEEN %s AND %s AND no_sucursal = %s ORDER BY CAST(no_sucursal AS UNSIGNED),Fecha_Op ASC"
                     cursor.execute(query_detalle, [fecha_inicio, fecha_fin, no_sucursal])
                     registro_detalle = cursor.fetchall()
@@ -606,7 +620,7 @@ def ventas_detalles_v2(request):
                             'Fecha_Op': registro['Fecha_Op'].isoformat(),
                         }   
                         data_detalle.append(registro_json)
-                    print(f"Data Detalle tarjetas: {data_detalle}")
+                    print(f"Data Detalle: {data_detalle}")
                     return JsonResponse({'data_ventas': data_ventas, 'data_detalle': data_detalle})
             else:
                 return JsonResponse({'error': 'No se puede establecer la conexion a la base de datos.'}, status=500)
@@ -669,8 +683,6 @@ def ventas_detalles_v2(request):
                     return JsonResponse({'data_ventas': data_ventas, 'data_detalle': data_detalle})
             else:
                 return JsonResponse({'error': 'No se puede establecer la conexion a la base de datos.'}, status=500)
-        
-        
     except Exception as e:
         error_mensaje = traceback.format_exc()
         print(f"Error: {error_mensaje}")
@@ -680,8 +692,6 @@ def ventas_detalles_v2(request):
 def modal_detalle(request):
     try:
         no_sucursal = request.GET.get('no_sucursal')
-        
-        
         fecha_venta = request.GET.get('fecha_venta')
         fecha_venta_fin = request.GET.get('fecha_venta_fin')
         
@@ -873,7 +883,7 @@ class DataFetcher:
             return cursor.fetchall()
     
     def fetch_data2(self, table_name, fecha_inicio, fecha_fin, no_sucursal=None):
-        query = f"SELECT * FROM {table_name} WHERE fecha BETWEEN '{fecha_inicio}' AND '{fecha_fin}' ORDER BY sucursal, fecha ASC"
+        query = f"SELECT * FROM {table_name} WHERE fecha BETWEEN '{fecha_inicio}' AND '{fecha_fin}'"
         params = [fecha_inicio, fecha_fin]
 
         if no_sucursal:
@@ -881,6 +891,7 @@ class DataFetcher:
             params.append(no_sucursal)
 
         # Formatear la consulta con los parámetros incrustados
+        query += "  ORDER BY sucursal, fecha ASC"
 
 
         with self.conexion.cursor() as cursor:
@@ -959,16 +970,9 @@ class DataFetcher:
 
         
     def fech_data5(self, table_name, fecha_inicio, fecha_fin, no_sucursal=None):
-        # Convertir fecha_inicio a objeto datetime y restarle un día
-        fecha_inicio_dt = datetime.strptime(fecha_inicio, '%Y-%m-%d')  # Asumiendo que la fecha está en formato 'YYYY-MM-DD'
-        fecha_inicio_dt -= timedelta(days=1)
-        fecha_inicio = fecha_inicio_dt.strftime('%Y-%m-%d')  # Convertir de nuevo a string
-        fecha_fin_dt = datetime.strptime(fecha_fin, '%Y-%m-%d')  # Asumiendo que la fecha está en formato 'YYYY-MM-DD'
-        fecha_fin_dt -= timedelta(days=1)
-        
-        fecha_fin = fecha_fin_dt.strftime('%Y-%m-%d')  # Convertir de nuevo a string
+ 
 
-        query = f"CALL {table_name}(%s, %s"
+        query = f"CALL {table_name}(%s, %s,NULL,NULL"
         params = [fecha_inicio, fecha_fin]
 
         if no_sucursal and no_sucursal.isdigit():
@@ -983,6 +987,38 @@ class DataFetcher:
             cursor.execute(query, tuple(params))
             return cursor.fetchall()
 
+    def fech_data6(self, table_name, fecha_inicio, fecha_fin, Fec_1, Fec_2, no_sucursal=None):
+ 
+
+        query = f"CALL {table_name}(%s, %s, %s, %s"
+        params = [fecha_inicio, fecha_fin, Fec_1, Fec_2]
+
+        if no_sucursal and no_sucursal.isdigit():
+            query += ", %s"
+            params.append(no_sucursal)
+        else:
+            query += ", NULL"
+        
+        query += ", 6);"
+
+        with self.conexion.cursor() as cursor:
+            cursor.execute(query, tuple(params))
+            return cursor.fetchall()
+
+    def fech_reportes(self, fecha_inicio, feccha_fin, no_sucursal=None):
+        query = f"SELECT * FROM extracto_1 e JOIN Reportes r ON e.idtbl_ExtractosBancarios = r.idtbl_ExtractosBancarios WHERE e.Fecha_Op BETWEEN %s AND %s"
+        params = [fecha_inicio, feccha_fin]
+        
+        if no_sucursal:
+            query += "AND e.no_sucursal = %s"
+            params.append(no_sucursal)
+            
+            with self.conexion.cursor() as cursor:
+                cursor.execute(query)
+                print(query)
+                results = cursor.fechall()
+                print("Resultados de fech_reportes", results)
+            return results
 @csrf_exempt
 def filtrar_claves(registro, claves_excluir, orden_claves):
     filtered_registro = {k: v for k, v in registro.items() if k not in claves_excluir}
@@ -1128,6 +1164,12 @@ def Diccionario_transacciones(request):
         fecha_fin = request.GET.get('fecha_fin')
         no_sucursal = request.GET.get('no_sucursal')
         tipoConsolidacion = request.GET.get('tipoConsolidacion')
+        resultados = check_if_monday(fecha_inicio, fecha_fin)
+        
+        if resultados:
+            Fec_1, Fec_2 = resultados  # Desempaquetar los resultados
+            print("Resultados desde fec_mandar:")
+            print(f"Fec_1: {Fec_1}, Fec_2: {Fec_2}")
         
 
         # print("fecha_inicio:", fecha_inicio)
@@ -1144,18 +1186,21 @@ def Diccionario_transacciones(request):
 
                 # Obtener datos de las consultas
                 data_bbva = fetcher.fech_data4('Union_Extractos', fecha_inicio, fecha_fin, no_sucursal)
-                fventas_data = fetcher.fetch_data2('Punto_Venta', fecha_inicio, fecha_fin, no_sucursal)
-                dataprose = fetcher.fech_data5('Porsentaje_CB', fecha_inicio, fecha_fin, no_sucursal)
+                fventas_data = fetcher.fetch_data2('Punto_Venta', Fec_1, Fec_2, no_sucursal)
+                dataprose = fetcher.fech_data5('Porsentaje_CB', Fec_1, Fec_2, no_sucursal)
+                dataprose2 = fetcher.fech_data6('Porsentaje_CB', fecha_inicio, fecha_fin, Fec_1, Fec_2,no_sucursal)
 
                 # Convertir a listas
                 data_bbva = list(data_bbva) if data_bbva else []
                 fventas_data = list(fventas_data) if fventas_data else []
                 dataprose = list(dataprose) if dataprose else []
+                dataprose2 = list(dataprose2) if dataprose2 else []
 
                 # Diccionarios para almacenar los datos
                 sucursales_data = {}
                 ventas_data_dict = {}
                 dataprose_data = {}
+                dataprose_data2 = {}
 
                 # Función para actualizar el diccionario con la suma de abonos
                 def update_data_dict(data_list):
@@ -1179,7 +1224,8 @@ def Diccionario_transacciones(request):
                                     'data': [],
                                     'total_abonos': 0.0,
                                     'ventas': [],
-                                    'porcentajes': 0.0
+                                    'porcentajes': 0.0,
+                                    'porcentajes_Extra': 0.0
                                 }
 
                             sucursales_data[key]['data'].append({
@@ -1248,11 +1294,38 @@ def Diccionario_transacciones(request):
                         except KeyError as e:
                             print(f"Error en porcentajes: {e}")
                             print(f"Registro sin clave requerida: {registro}")
+                
+                # Función para actualizar el diccionario de porcentajes
+                def update_porcentajes_dict2(data_list):
+                    for registro in data_list:
+                        try:
+                            sucursal_registro2 = str(registro['sucursal'])
+                            Porcentaje = float(registro['Porcentaje'])
+
+                            if sucursal_registro2 is None:
+                                sucursal_registro2 = 'Sin sucursal'
+
+                            key = sucursal_registro2
+
+                            if key not in dataprose_data2:
+                                dataprose_data2[key] = []
+
+                            dataprose_data2[key].append({
+                                'Porcentaje': Porcentaje
+                            })
+                            if key not in dataprose_data2:
+                                dataprose_data2[key] = []
+
+                            print("Porsentaje dosssss",dataprose_data2)
+                        except KeyError as e:
+                            print(f"Error en porcentajes: {e}")
+                            print(f"Registro sin clave requerida: {registro}")
 
                 # Actualizar los diccionarios con los datos combinados
                 update_data_dict(data_bbva)
                 update_ventas_dict(fventas_data)
                 update_porcentajes_dict(dataprose)
+                update_porcentajes_dict2(dataprose2)
 
                 # Combinar los datos en el formato final
                 total_abonos_por_sucursal = []
@@ -1261,12 +1334,14 @@ def Diccionario_transacciones(request):
 
                     # Obtener los porcentajes correspondientes al no_sucursal
                     porcentajes = dataprose_data.get(str(value['no_sucursal']), [])
+                    porcentajes2 = dataprose_data2.get(str(value['no_sucursal']), [])
 
                     sucursal_data = {
                         'no_sucursal': value['no_sucursal'],
                         'suc': value['suc'],
                         'total_abonos': f"{value['total_abonos']:.2f}",
                         'porcentajes': porcentajes,
+                        'porcentajes2': porcentajes2,
                         'data': value['data'],
                         'ventas': ventas
                     }
@@ -1455,31 +1530,34 @@ def Diccionario_transacciones(request):
 def actualizar_registros(request):
     if request.method == 'POST':
         data = json.loads(request.body)
+        print("Datos recibidos en el backend:", data)
         idtbl_ExtractosBancarios = data.get('idtbl_ExtractosBancarios')
-        ventas_sk = data.get('ventas_sk', [])
+        ventas = data.get('ventas', [])
 
         try:
             with connection.cursor() as cursor:
-                for venta_sk in ventas_sk:
-                    # Intentar actualizar la tabla etlPosOne_prueba
+                for venta in ventas:
+                    ventaId = venta['ventaId']
+                    incidencia = venta.get('incidencia')
+
+                    # Realizar la actualización
                     cursor.execute("""
                         UPDATE etlPosOne_prueba 
-                        SET idtbl_ExtractosBancarios = %s, CB = 2 
+                        SET idtbl_ExtractosBancarios = %s, CB = 2, incidencia = %s
                         WHERE folio_venta = %s
-                    """, [idtbl_ExtractosBancarios, venta_sk])
+                    """, [idtbl_ExtractosBancarios, incidencia, ventaId])
 
-                    if cursor.rowcount == 0:  # Si no se actualizó ninguna fila
-                        # Intentar actualizar la tabla napsepagos
+                    if cursor.rowcount == 0:
                         cursor.execute("""
                             UPDATE napsepagos 
-                            SET idtbl_ExtractosBancarios = %s, CB = 2 
+                            SET idtbl_ExtractosBancarios = %s, CB = 2, incidencia = %s
                             WHERE Venta_sk = %s
-                        """, [idtbl_ExtractosBancarios, venta_sk])
+                        """, [idtbl_ExtractosBancarios, incidencia, ventaId])
 
-                        if cursor.rowcount == 0:  # Si tampoco se actualizó ninguna fila
+                        if cursor.rowcount == 0:
                             return JsonResponse({
                                 'status': 'failed',
-                                'message': f'Venta_sk {venta_sk} no encontrada en ninguna tabla'
+                                'message': f'Venta {ventaId} no encontrada en ninguna tabla'
                             }, status=404)
 
             return JsonResponse({'status': 'success'})
@@ -1488,3 +1566,401 @@ def actualizar_registros(request):
             return JsonResponse({'status': 'failed', 'message': str(e)}, status=500)
 
     return JsonResponse({'status': 'failed', 'message': 'Invalid request method'}, status=400)
+
+
+
+#Formateo de todas las fechas 
+@csrf_exempt
+def check_if_monday(Fec_ini, Fec_Final):
+    # Convertir las cadenas en objetos de fecha
+    Fec_ini = datetime.strptime(Fec_ini, '%Y-%m-%d').date()
+    Fec_Final = datetime.strptime(Fec_Final, '%Y-%m-%d').date()
+    
+    # Verificar si Fec_ini es lunes
+    if Fec_ini.weekday() == 0:  # 0 es lunes
+        # Si es lunes, restar 3 días y 1 día a Fec_Final
+        Fec_viernes = Fec_ini - timedelta(days=3)
+        Fec_domingo = Fec_Final - timedelta(days=1)
+        return (Fec_viernes, Fec_domingo)
+    else:
+        # Si no es lunes, restar 1 día a Fec_ini y Fec_Final
+        Fec_inicio = Fec_ini - timedelta(days=1)
+        Fec_fin = Fec_Final - timedelta(days=1)
+        return (Fec_inicio, Fec_fin)
+
+
+
+
+# Descargar reportes 
+@csrf_exempt
+def reportes(request):
+    return render(request, 'MAIN/report.html')
+
+
+@csrf_exempt
+def generar_reporte(request):
+    if request.method == 'POST':
+        try:
+            # Extraer datos de la solicitud
+            tipos_reporte = request.POST.get('tipoReporte')
+            fecha_inicio = request.POST.get('fecha1')
+            fecha_fin = request.POST.get('fecha2')
+            no_sucursal = request.POST.get('sucursal')
+            
+            print(f"Fecha 1: {fecha_inicio}, Fecha 2: {fecha_fin}, No. Suc: {no_sucursal}")
+
+            # Verificar si es tipo de reporte 1
+            if tipos_reporte == '1':
+                # Consulta SQL
+                query = """
+                SELECT e.*, r.*, 
+                    CASE 
+                        WHEN r.CB = 1 THEN 'Automatica'
+                        WHEN r.CB = 2 THEN 'Manual'
+                        ELSE 'N/C'  -- Opcional: para otros valores de CB
+                    END AS Tipo_Proceso
+                FROM extracto_1 e
+                JOIN Reportes r ON e.idtbl_ExtractosBancarios = r.idtbl_ExtractosBancarios
+                WHERE e.Fecha_Op BETWEEN %s AND %s
+                """
+                params = [fecha_inicio, fecha_fin]
+
+                if no_sucursal:
+                    query += " AND e.no_sucursal = %s"
+                    params.append(no_sucursal)
+
+                try:
+                    # Conexión a la base de datos
+                    conexion = conectar_bd()
+                    cursor = conexion.cursor()
+                    print("Conexión a la base de datos exitosa")
+                    
+                    # Ejecutar la consulta
+                    cursor.execute(query, params)
+                    filas = cursor.fetchall()
+                    
+                    print(f"Filas obtenidas: {filas}")
+                    
+                    if not filas:
+                        return JsonResponse({'error': 'No se encontraron datos para las fechas seleccionadas.'}, status=404)
+
+                    # Crear archivo Excel
+                    wb = openpyxl.Workbook()
+                    ws = wb.active
+                    ws.title = "Reporte consolidado"
+
+                    # Encabezados originales
+                    encabezados_originales = ['Abono', 'NuCuenta', 'Fecha_Op', 'AF1', 'AF2', 'AF3', 'AF4', 'AF5', 'no_sucursal',
+                                              'idtbl_ExtractosBancarios', 'folio_venta', 'total_neto', 'monto_pagado',
+                                              'forma_pago_id', 'origen', 'fecha', 'CB', 'r.idtbl_ExtractosBancarios', 'Tipo_Proceso']
+                    
+                    # Encabezados renombrados
+                    encabezados_renombrados = ['Abonado', 'Número de Cuenta', 'Fecha de Operación', 'Afiliacion BBVA', 'Afiliacion',
+                                               'Afiliacion', 'Afiliacion', 'Afiliacion', 'Sucursal', 'ID Extracto Bancario', 
+                                               'Folio de Venta', 'Total Neto', 'Monto Pagado', 'Forma de Pago', 'Origen', 
+                                               'Fecha', 'CB', 'ID Reporte', 'Tipo de Proceso']
+                    
+                    azul_fill = PatternFill(start_color="0000FF", end_color="0000FF", fill_type="solid")
+                    verde_fill = PatternFill(start_color="00FF00", end_color="00FF00", fill_type="solid")
+                    bold_font = Font(bold=True)
+                    
+                    columnas_azul = ['Abono', 'NuCuenta', 'Fecha_Op', 'AF1', 'AF2', 'AF3', 'AF4', 'AF5', 'no_sucursal','CB' ,'idtbl_ExtractosBancarios', 'Tipo_Proceso']
+                    columnas_verde = ['folio_venta', 'total_neto', 'monto_pagado', 'forma_pago_id', 'origen', 'fecha', 'r.idtbl_ExtractosBancarios']
+                    
+                    # Identificar las columnas con datos válidos
+                    indices_validos = []
+                    for i, encabezado in enumerate(encabezados_originales):
+                        columna_tiene_datos = any(fila.get(encabezado) not in (None, '', 'None') for fila in filas)
+                        if columna_tiene_datos:
+                            indices_validos.append(i)
+
+                    # Filtrar los encabezados renombrados y escribir en Excel
+                    encabezados_filtrados = [encabezados_renombrados[i] for i in indices_validos]
+                    ws.append(encabezados_filtrados)
+                    
+                    # Aplicar estilos a los encabezados filtrados
+                    for col_num, i in enumerate(indices_validos, 1):
+                        cell = ws.cell(row=1, column=col_num)
+                        cell.font = bold_font
+
+                        if encabezados_originales[i] in columnas_azul:
+                            cell.fill = azul_fill
+                        elif encabezados_originales[i] in columnas_verde:
+                            cell.fill = verde_fill
+                    
+                    # Escribir los datos y convertir a string si es necesario
+                    # Escribir los datos y convertir a string si es necesario
+                    for fila in filas:
+                        valores = []
+                        for i in indices_validos:
+                            valor = fila.get(encabezados_originales[i])
+                            try:
+                                # Convertir Decimal y datetime.date a string
+                                if isinstance(valor, Decimal):
+                                    valor = str(valor)  # Convertir Decimal a cadena
+                                elif isinstance(valor, datetime.date):
+                                    valor = valor.isoformat()  # Convertir fecha a cadena en formato ISO
+                                elif valor is None:
+                                    valor = ''  # Convertir None a cadena vacía
+                                else:
+                                    valor = str(valor)  # Convertir cualquier otro tipo a cadena
+                            except Exception as e:
+                                print(f"Error con el valor: {valor}, tipo: {type(valor)} - {e}")
+                                valor = str(valor)  # Asegurarse de convertirlo a string en caso de error
+
+                            valores.append(valor)  # Agregar el valor convertido a la lista
+
+                        ws.append(valores)  # Escribir la fila en el Excel
+
+                        
+                    # Configurar la respuesta HTTP para descargar el archivo Excel
+                    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                    response['Content-Disposition'] = f'attachment; filename=reporte_consolidado_{fecha_inicio}_a_{fecha_fin}.xlsx'
+
+                    # Guardar el archivo en la respuesta
+                    wb.save(response)
+                    return response
+
+                finally:
+                    cursor.close()
+                    conexion.close()
+            else:
+                return JsonResponse({'error': 'Tipo de reporte no válido'}, status=400)
+
+        except Exception as e:
+            # Imprimir el error en la consola y devolver un mensaje al cliente
+            print(f"Error procesando el reporte: {str(e)}")
+            return JsonResponse({'error': f'Error procesando el reporte: {str(e)}'}, status=500)
+    
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+
+@csrf_exempt
+def reporte_amex(request):
+    return render(request, 'MAIN/reporte_amex.html')
+
+@csrf_exempt
+def generar_reporte_amex(request):
+    if request.method == 'POST':
+        try:
+            tipos_reporte = request.POST.get('tipoReporte')
+            fecha_inicio = request.POST.get('fecha1')
+            fecha_fin = request.POST.get('fecha2')
+            no_sucursal = request.POST.get('sucursal')
+            incidencia = request.POST.get('incidencia')
+            
+            # print(f"Fecha 1: {fecha_inicio}, Fecha 2: {fecha_fin}, No. Suc: {no_sucursal}")
+            
+            if tipos_reporte == '1':
+                query = """
+                SELECT va.folio_venta, va.monto_pagado, va.forma_pago_id, va.forma_pago, va.Origen, va.fecha, va.CB, va.idtbl_ExtractosBancarios,
+                       ac.NuCuenta, ac.Abono, ac.Fecha_Op, ac.afiliacion, ac.no_sucursal, ac.sucursal, ac.Monto_cargo
+                    FROM ventas_amex va 
+                    JOIN Amex_Extractos ac 
+                    ON va.monto_pagado = ac.Monto_cargo 
+                    AND va.sucursal = ac.no_sucursal 
+                    AND va.fecha = ac.Fecha_pago
+                    WHERE ac.Fecha_Op BETWEEN %s AND %s;
+                """
+                params = [fecha_inicio, fecha_fin]
+                
+                if no_sucursal:
+                    query += " AND ac.no_sucursal = %s"
+                    params.append(no_sucursal)
+                
+                # print(f"consulta sql: {query}")
+                # print(f"parametros: {params}")
+
+                conexion = conectar_bd()
+                if conexion:
+                    print("conexion bd exitosa")
+                else:
+                    print("fallo en la conexion a la base de datos")
+                    
+                cursor = conexion.cursor()
+                
+                try:
+                    cursor.execute(query, params)
+                    filas = cursor.fetchall()
+                    
+                    # print(f"Filas obtenidas: {filas}")
+                    
+                    if not filas:
+                        return JsonResponse({'error': 'No se encontraron datos para las fechas seleccionadas.'}, status=404)
+                    
+                    # Crear el archivo Excel en memoria usando BytesIO
+                    output = io.BytesIO()
+                    wb = openpyxl.Workbook()
+                    ws = wb.active
+                    ws.title = "Reporte consiliado"
+                    
+                    # Definir los encabezados
+                    encabezados_originales = ['folio_venta', 'monto_pagado', 'forma_pago_id', 'forma_pago', 'Origen', 'fecha', 'CB','idtbl_ExtractosBancarios',
+                                              'NuCuenta', 'Abono', 'Fecha_Op', 'afiliacion', 'no_sucursal', 'sucursal', 'Monto_cargo']
+                    
+                    # Encabezados filtrados
+                    encabezados_renombrados = ['Folio', 'Monto', 'Forma pago id', 'Forma pago', 'Origen', 'fecha', 'Consiliado','idtbl_ExtractosBancarios',
+                                               'Numero de cuenta', 'Abono', 'Fecha Operacion', 'Afiliacion', 'No sucursal', 'Sucursal', 'Monto cargo']
+                    
+                    azul_fill = PatternFill(start_color="0000FF", end_color='0000FF', fill_type='solid')
+                    verde_fill = PatternFill(start_color="00FF00", end_color='00FF00', fill_type='solid')
+                    bold_font = Font(bold=True)
+                    
+                    columnas_azul = ['folio_venta', 'monto_pagado', 'forma_pago_id', 'forma_pago', 'Origen', 'fecha', 'CB','idtbl_ExtractosBancarios',]
+                    columnas_verde = ['NuCuenta', 'Abono', 'Fecha_Op', 'afiliacion', 'no_sucursal', 'sucursal', 'Monto_cargo']
+                    
+                    indices_validos = []
+                    for i, encabezado in enumerate(encabezados_originales):
+                        columna_tiene_datos = any(fila.get(encabezado) not in (None, '', 'None') for fila in filas)
+                        if columna_tiene_datos:
+                            indices_validos.append(i)
+                                       
+                    
+                    encabezados_filtrados = [encabezados_renombrados[i] for i in indices_validos]
+                    ws.append(encabezados_filtrados)
+                    
+                    for col_num, i in enumerate(indices_validos, 1):
+                        cell = ws.cell(row=1, column=col_num)
+                        cell.font = bold_font
+                        
+                        if encabezados_originales[i] in columnas_azul:
+                            cell.fill = azul_fill
+                        elif encabezados_originales[i] in columnas_verde:
+                            cell.fill = verde_fill
+                    
+                    for fila in filas:
+                        valores = []
+                        for i in indices_validos:
+                            valor = fila.get(encabezados_originales[i])
+                            if isinstance(valor, (Decimal, datetime.date)):
+                                valor = str(valor)
+                            valores.append(valor)
+                        ws.append(valores)                                        
+                    
+                    # Configurar la respuesta HTTP con el archivo
+                    response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                    response['Content-Disposition'] = f'attachment; filename=reporte_consiliado_AMEX_{fecha_inicio}_a_{fecha_fin}.csv'
+                    
+                    wb.save(response)
+                    return response
+                finally:
+                    cursor.close()
+                    conexion.close()
+            else:
+                return JsonResponse({'error': 'Tipo de reporte no válido'}, status=400)
+        except Exception as e:
+            print(f"Error procesando el reporte: {str(e)}")
+            print(traceback.format_exc())  # Imprimir el traceback del error para depurar
+            return JsonResponse({'error': f'Error procesando el reporte: {str(e)}'}, status=500)
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+# efectivo
+@csrf_exempt
+def Tabla_detalle_efectivo(request):
+    return render(request, 'MAIN/Tabla_CB_Efec.html')
+
+
+# SP de conciliacion automatica
+@csrf_exempt
+def ejecutar_sp(request):
+    print("La función ejecutar_sp ha sido invocada.")  # Verificar si la función es llamada
+
+    if request.method == 'POST':
+        try:
+            # Obtener las fechas desde el formulario
+            fecha_inicio = request.POST.get('fecha_inicio')
+            fecha_fin = request.POST.get('fecha_fin')
+            
+            print(f"Fechas recibidas: Inicio - {fecha_inicio}, Fin - {fecha_fin}")  # Verificar las fechas
+            
+            if not fecha_inicio or not fecha_fin:
+                return JsonResponse({'error': 'Las fechas son requeridas.'}, status=400)
+
+            connection = conectar_bd()
+            cursor = connection.cursor()
+            print("Conexión a la base de datos establecida.")  # Verificar la conexión a la BD
+
+            # Llama al procedimiento almacenado con fechas
+            cursor.callproc('consolidacion.Consiliacion_Automatica')
+            print("Procedimiento almacenado ejecutado.")  # Verificar que el SP se ha ejecutado
+            
+            # Obtener el resultado del SP
+            try:
+                result = cursor.fetchall()  # Obtener el resultado del SP
+                print("Resultado del SP:", result)
+            except Exception as e:
+                print(f"No se pudieron obtener resultados del SP: {str(e)}")
+                result = None
+            
+            connection.commit()
+            print("Cambios confirmados en la base de datos.")  # Confirmar commit
+            
+            # Acceder al mensaje del resultado (si es un diccionario)
+            message = result[0].get('message', 'El SP se ejecutó correctamente') if result else 'El SP se ejecutó correctamente'
+            
+            return JsonResponse({'message': message}, status=200)
+
+        except Exception as e:
+            print(f"Error al ejecutar el SP: {str(e)}")
+            return JsonResponse({'error': str(e)}, status=400)
+        
+        finally:
+            if cursor:
+                cursor.close()
+            if connection:
+                connection.close()  # Cerrar conexión
+            print("Conexión cerrada.")  # Confirmar que la conexión se ha cerrado correctamente
+    else:
+        print("El método no es POST, no se puede procesar.")  # Verificar si el método no es POST
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+
+@csrf_exempt
+def ejecutar_SP_amex(request):
+    print("La funcion ejecutar_SP_amex ha sido invocado")
+    
+    if request.method == 'POST':
+        try:
+            fecha_inicio = request.POST.get('fecha_inicio')
+            fecha_fin = request.POST.get('fecha_fin')
+            
+            print(f"Fecha recibidas: inicio - {fecha_inicio}, fin - {fecha_fin}")
+            
+            if not fecha_inicio or not fecha_fin:
+                return JsonResponse({'error': 'Las fechas son requeridas.'}, status=400)
+            
+            connection = conectar_bd()
+            cursor = connection.cursor()
+            print("conexion a la base de datos establecida.")
+            
+            cursor.callproc('consolidacion.Consiliacion_Automatica_Amex')
+            print("procedimiento almacenado ejecutado.")
+            
+            try:
+                result = cursor.fetchall()
+                print("Resultado del SP:", result)
+            except Exception as e:
+                print(f"No se pudiero obtener los resultados del SP: {str(e)}")
+                result = None
+            
+            connection.commit()
+            print(f"Cambios confirmados en la base de datos.")
+            
+            message = result[0].get('message', 'El sp se ejecuto correctamente') if result else 'El SP se ejecuto correctamete'
+            
+            return JsonResponse({'message': message}, status=200)
+        except Exception as e:
+            print(f"Error al ejecutar el SP: {str(e)}")
+            return JsonResponse({'error': str(e)}, status=400)
+        finally:
+            if cursor:
+                cursor.close()
+            if connection:
+                connection.close()
+            print("conexion cerrada")
+    else:
+        print("El metodo no es POST. no se puede proceder.")
+    return JsonResponse({'error': 'Metodo no permitido'}, status=405)

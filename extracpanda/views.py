@@ -415,7 +415,7 @@ def amex_com(uploaded_file, selected_option):
     try:
         logging.info(f'Cargar archivo amex complemento: {uploaded_file.name}')
         print(f"Selected Option amex complemento (cargar_amex): {selected_option}")
-        df = pd.read_excel(uploaded_file, engine='openpyxl', skiprows=17)
+        df = pd.read_excel(uploaded_file, engine='openpyxl', skiprows=9)
         if df is not None and not df.empty:
             logging.info("Registros cargados en el dataframe:")
             logging.info(df.head())
@@ -436,7 +436,7 @@ def amex_complemento(file):
     global num_registros
     try:
         global df
-        df = pd.read_excel(file, engine='openpyxl', skiprows=17)
+        df = pd.read_excel(file, engine='openpyxl', skiprows=9)
         if not df.empty:
             print("Registros cargados en el dataframe:")
             print(df.head())
@@ -470,7 +470,47 @@ def cargar_excel_hsbc(uploaded_file, selected_option):
        error_message = f"Error al cargar el archivo de efectivo hsbc: {str(e)}"
        logging.error(error_message)
        return{'success': False, 'message': error_message}
+       
+@csrf_exempt
+def cargar_exel_amex_detalle(uploaded_file, selected_option):
+    try:
+        logging.info(f'Cargar archivo amex detalle:: {uploaded_file.name}')
+        print(f"Select Option amex detalle(cargar_excel_amex_detalle): {selected_option}")
+        
+        # Leer el archivo Excel
+        df = pd.read_excel(uploaded_file, engine='openpyxl', skiprows=9)
+        
+        if df is not None and not df.empty:
+            logging.info("Registros cargados en el dataframe:")
+            logging.info(df.head())
 
+            # Quitar los símbolos negativos de todas las columnas numéricas
+            for column in df.columns:
+                df[column] = df[column].apply(convertir_y_limpiar_decimal)
+
+            num_registros = len(df)
+            logging.info(f"\nNumero de registros: {num_registros}")
+            return {'success': True, 'dataframe': df, 'num_registros': num_registros}
+        else:
+            logging.warning("El dataframe esta vacio.")
+            return {'success': False, 'message': 'El dataframe esta vacio'}
+    except Exception as e:
+        error_message = f"Error al cargar el archivo de amex a detalle: {str(e)}"
+        logging.error(error_message)
+        return {'success': False, 'message': error_message}
+
+def convertir_y_limpiar_decimal(valor):
+    try:
+        # Reemplazar comas y convertir a string si es necesario
+        valor_str = str(valor).replace(',', '')
+        # Convertir a Decimal y quitar el signo negativo
+        valor_decimal = Decimal(valor_str)
+        if valor_decimal < 0:
+            valor_decimal = abs(valor_decimal)
+        return valor_decimal
+    except (InvalidOperation, ValueError):
+        # Si no es un valor numérico válido, devolver el valor original
+        return valor
 
 @csrf_protect
 def update_option(request):
@@ -509,13 +549,12 @@ def update_option(request):
                 result_message = carga_bbvaefectivo(uploaded_file, selected_option)
             elif selected_option == 'opcion_efectivo_12': # banamex (7867)
                 result_message = cargar_bnmx(uploaded_file, selected_option)
-            
 
         elif selected_type == 'tarjeta':
             selected_option = request.POST.get('excel_format_tarjeta')
             uploaded_file = request.FILES.get('file')
             if selected_option == 'opcion_tarjeta_1':
-                result_message = cargar_excel_bbva(uploaded_file, selected_option) 
+                result_message = cargar_excel_bbva(uploaded_file, selected_option)
             elif selected_option == 'opcion_tarjeta_2':
                 result_message = cargar_excel_hsbc(uploaded_file, selected_option)
 
@@ -526,32 +565,29 @@ def update_option(request):
                 result_message = amex_com(uploaded_file, selected_option)
             else:
                 return JsonResponse({'status': 'error', 'message': 'Tipo de operación no válido'}, status=400)
-        
-        print(f"Debug: result_message={result_message}")
+
+                print(f"Debug: result_message={result_message}")
 
         if result_message.get('status') == 'error':
             return JsonResponse(result_message, status=400)
 
         if result_message:
             df = result_message.get('dataframe')
-
+            #print(df)
             if df is not None:
+                # Aplicar formateo de fechas a la columna 'Fecha_Op' si existe
+                if 'Fecha_Op' in df.columns:
+                    df['Fecha_Op'] = df['Fecha_Op'].apply(lambda x: formatear_fecha(str(x)))
+
                 rows = df.to_dict(orient='records')
 
                 if selected_type == 'efectivo':
-                    df = result_message.get('dataframe')
-                    if df is not None:
-                        rows = df.to_dict(orient='records')
-                        context = {'columns': df.columns.tolist(), 'rows': rows}
-                        return render(request, 'extracpanda/select_columnsEfect.html', context)
-                    else:
-                        return JsonResponse({'status': 'error', 'message': 'El dataframe no None despues de la carga'}, status=500)
+                    context = {'columns': df.columns.tolist(), 'rows': rows}
+                    return render(request, 'extracpanda/select_columnsEfect.html', context)
                 elif selected_type == 'tarjeta':
                     return render(request, 'extracpanda/select_columns2.html', {'columns': df.columns.tolist(), 'rows': rows})
-                    # return redirect({'action': 'render', 'template': 'extracpanda/select_columns2.html', 'columns': df.columns.tolist(), 'rows': rows})
                 elif selected_type == 'amexplus':
                     return render(request, 'extracpanda/select_columnsAmex.html', {'columns': df.columns.tolist(), 'rows': rows})
-                    # return redirect({'action': 'render', 'template': 'extracpanda/select_columnsAmex.html', 'columns': df.columns.tolist(), 'rows': rows})
                 else:
                     return JsonResponse({'status': 'error', 'message': 'Tipo de operación no válido'}, status=400)
             else:
@@ -559,24 +595,83 @@ def update_option(request):
         else:
             return JsonResponse({'status': 'error', 'message': 'result_message es None'}, status=500)
     except Exception as e:
+        import traceback
         print(traceback.format_exc())
         error_message = f"Error en la función update: {str(e)}"
         print(error_message)
-        return JsonResponse({'status': 'error', 'message': error_message}, status=500)
+        return JsonResponse({'status': 'error', 'message': error_message}, status=500)  
     # return JsonResponse({'status': 'error', 'message': 'Error inesperado, no se pudo procesar la solicitud'}, status=500)
 
-    
-# DB_NAME = 'bancos.db'
-# TABLE_NAME = 'bank'
-
-# Configura la conexión a la base de datos "solo fue de prueba"
-db = pymysql.connect(host='40.124.171.87', user='jesanchez', password='moboweb5226', database='consolidacion', cursorclass=cursors.DictCursor )
-cursor = db.cursor()
-
-logger = logging.getLogger(__name__)
+    # return JsonResponse({'status': 'error', 'message': 'Error inesperado, no se pudo procesar la solicitud'}, status=500)
 
 
 @csrf_exempt
+def formatear_fecha(fecha_str):
+    """
+    Formatea una fecha al formato YYYY-MM-DD si no está ya en ese formato.
+
+    :param fecha_str: Cadena con la fecha a formatear
+    :return: Fecha en formato YYYY-MM-DD o None si no es válida
+    """
+    print(f"Fecha original: {fecha_str}")
+
+    # Verificar si ya está en formato YYYY-MM-DD
+    if re.match(r'^\d{4}-\d{2}-\d{2}$', fecha_str):
+        return fecha_str
+
+    # Diccionario de meses para texto en español
+    meses = {
+        "enero": 1, "febrero": 2, "marzo": 3, "abril": 4, "mayo": 5, "junio": 6,
+        "julio": 7, "agosto": 8, "septiembre": 9, "octubre": 10, "noviembre": 11, "diciembre": 12
+    }
+
+    try:
+        # Intentar el formato DD-MM-YYYY
+        fecha_dt = datetime.strptime(fecha_str, '%d-%m-%Y')
+        fecha_formateada = fecha_dt.strftime('%Y-%m-%d')
+        return fecha_formateada
+    except ValueError:
+        pass  # Continuar intentando otros formatos
+
+    try:
+        # Intentar el formato DD/MM/YYYY
+        fecha_dt = datetime.strptime(fecha_str, '%d/%m/%Y')
+        fecha_formateada = fecha_dt.strftime('%Y-%m-%d')
+        return fecha_formateada
+    except ValueError:
+        pass  # Continuar intentando otros formatos
+
+    # Intentar otros formatos como "15 de julio de 2024"
+    regex = r'(?P<dia>\d{1,2}) de (?P<mes>\w+) de (?P<anio>\d{4})'
+    regex_dmy = r'(?P<dia>\d{2})(?P<mes>\d{2})(?P<anio>\d{4})'
+
+    match = re.match(regex, fecha_str)
+    if match:
+        dia = int(match.group('dia'))
+        mes = meses.get(match.group('mes').lower(), None)
+        anio = int(match.group('anio'))
+        if mes is not None and 1 <= dia <= 31:
+            fecha_formateada = f"{anio:04d}-{mes:02d}-{dia:02d}"
+            return fecha_formateada
+
+    match_dmy = re.match(regex_dmy, fecha_str)
+    if match_dmy:
+        dia = int(match_dmy.group('dia'))
+        mes = int(match_dmy.group('mes'))
+        anio = int(match_dmy.group('anio'))
+        try:
+            fecha_dt = datetime(year=anio, month=mes, day=dia)
+            fecha_formateada = fecha_dt.strftime('%Y-%m-%d')
+            return fecha_formateada
+        except ValueError:
+            pass
+
+    print(f"Error al formatear la fecha: Formato ahhhhhhhhhhh no valido - {fecha_str}")
+    return None
+
+
+
+
 # def formatear_fecha(fecha_str):
 #     print(f"Fecha original: {fecha_str}")
 
@@ -622,48 +717,66 @@ logger = logging.getLogger(__name__)
 #         return None
 
 # funcion 2
-def formatear_fecha(fecha_str):
-    print(f"Fecha original: {fecha_str}")
+# def formatear_fecha(fecha_str):
+#     print(f"Fecha original: {fecha_str}")
 
-    if re.match(r'^\d{4}-\d{2}-\d{2}$', fecha_str):
-        return fecha_str
+#     if re.match(r'^\d{4}-\d{2}-\d{2}$', fecha_str):
+#         return fecha_str
     
-    meses = {
-        "enero": 1, "febrero": 2, "marzo": 3, "abril": 4, "mayo": 5, "junio": 6,
-        "julio": 7, "agosto": 8, "septiembre": 9, "octubre": 10, "noviembre": 11, "diciembre": 12
-    }
-    try:
-        fecha_dt = datetime.strptime(fecha_str, '%d/%m/%Y')
-        fecha_formateada = fecha_dt.strftime('%Y-%m-%d')
-        return fecha_formateada
-    except ValueError:
-        regex = r'(?P<dia>\d{1,2}) de (?P<mes>\w+) de (?P<anio>\d{4})'
-        regex_dmy = r'(?P<dia>\d{2})(?P<mes>\d{2})(?P<anio>\d{4})'
+#     meses = {
+#         "enero": 1, "febrero": 2, "marzo": 3, "abril": 4, "mayo": 5, "junio": 6,
+#         "julio": 7, "agosto": 8, "septiembre": 9, "octubre": 10, "noviembre": 11, "diciembre": 12
+#     }
+#     try:
+#         fecha_dt = datetime.strptime(fecha_str, '%d/%m/%Y')
+#         fecha_formateada = fecha_dt.strftime('%Y-%m-%d')
+#         return fecha_formateada
+#     except ValueError:
+#         regex = r'(?P<dia>\d{1,2}) de (?P<mes>\w+) de (?P<anio>\d{4})'
+#         regex_dmy = r'(?P<dia>\d{2})(?P<mes>\d{2})(?P<anio>\d{4})'
 
-        match = re.match(regex, fecha_str)
-        if match:
-            dia = int(match.group('dia'))
-            mes = meses.get(match.group('mes').lower(), None)
-            anio = int(match.group('anio'))
-            if mes is not None and 1 <= dia <= 31:
-                fecha_formateada = f"{anio:04d}-{mes:02d}-{dia:02d}"
-                return fecha_formateada
+#         match = re.match(regex, fecha_str)
+#         if match:
+#             dia = int(match.group('dia'))
+#             mes = meses.get(match.group('mes').lower(), None)
+#             anio = int(match.group('anio'))
+#             if mes is not None and 1 <= dia <= 31:
+#                 fecha_formateada = f"{anio:04d}-{mes:02d}-{dia:02d}"
+#                 return fecha_formateada
         
-        match_dmy = re.match(regex_dmy, fecha_str)
-        if match_dmy:
-            dia = int(match_dmy.group('dia'))
-            mes = int(match_dmy.group('mes'))
-            anio = int(match_dmy.group('anio'))
-            try:
-                fecha_dt = datetime(year=anio, month=mes, day=dia)
-                fecha_formateada = fecha_dt.strftime('%Y-%m-%d')
-                return fecha_formateada
-            except ValueError:
-                pass
-        print(f"Error al formatear la fecha: Formato no valido - {fecha_str}")
-        return None
+#         match_dmy = re.match(regex_dmy, fecha_str)
+#         if match_dmy:
+#             dia = int(match_dmy.group('dia'))
+#             mes = int(match_dmy.group('mes'))
+#             anio = int(match_dmy.group('anio'))
+#             try:
+#                 fecha_dt = datetime(year=anio, month=mes, day=dia)
+#                 fecha_formateada = fecha_dt.strftime('%Y-%m-%d')
+#                 return fecha_formateada
+#             except ValueError:
+#                 pass
+#         print(f"Error al formatear la fecha: Formato no valido - {fecha_str}")
+#         return None
 
-    
+
+
+# @csrf_exempt
+# def formatear_fecha(fecha):
+#     """
+#     Convierte una fecha del formato DD-MM-YYYY al formato YYYY-MM-DD.
+
+#     :param fecha: Fecha en formato DD-MM-YYYY
+#     :return: Fecha en formato YYYY-MM-DD
+#     :raises ValueError: Si la fecha no está en un formato válido
+#     """
+#     try:
+#         # Convertir del formato DD-MM-YYYY al objeto datetime
+#         fecha_dt = datetime.strptime(fecha, '%d-%m-%Y')
+#         # Convertir al formato YYYY-MM-DD
+#         return fecha_dt.strftime('%Y-%m-%d')
+#     except ValueError as e:
+#         raise ValueError(f"Formato no valido - {fecha}")
+
 
 @csrf_exempt
 def enviar_route(request):
@@ -671,14 +784,6 @@ def enviar_route(request):
         data = json.loads(request.body.decode('utf-8'))
         if not data:
             return JsonResponse({'success': False, 'message': 'No se recibieron datos en la solicitud'}, status=400)
-
-        try:
-            locale.setlocale(locale.LC_ALL, 'es_ES.utf-8')
-            # Resto del código que requiere la configuración regional
-        except Exception as e:
-            print(f"Error al establecer la configuración regional: {str(e)}")
-        finally:
-            locale.setlocale(locale.LC_ALL, '')
 
         with conectar_bd() as connection:
             if connection is None:
@@ -703,41 +808,35 @@ def enviar_route(request):
                     abono_valor += [''] * (max_length - len(abono_valor))
                     cargo_valor += [''] * (max_length - len(cargo_valor))
 
-                    # abono_valor = [float(valor.replace(',', '.')) if valor != 'nan' else None for valor in abono_valor]
-                    # cargo_valor = [float(valor.replace(',', '.')) if valor != 'nan' else None for valor in cargo_valor]
-                    # nuevo 
-                    abono_valor = [float(valor.replace(',', '.')) if valor.strip() and valor != 'nan' else None for valor in abono_valor]
-                    cargo_valor = [float(valor.replace(',', '.')) if valor.strip() and valor != 'nan' else None for valor in cargo_valor]
+                    abono_valor = [float(valor.replace(',', '.')) if valor.strip() and valor != 'nan' else 0 for valor in abono_valor]
+                    cargo_valor = [float(valor.replace(',', '.')) if valor.strip() and valor != 'nan' else 0 for valor in cargo_valor]
+
                     if max_length > 0:
                         print(f"Registros a insertar en la base de datos")
                         print(f"Número de registros a insertar: {max_length}")
 
                         for i in range(max_length):
-                            # print(f"NuCuenta: {numero_cuenta[i]}, Fecha_Op: {fecha_operacion[i]}, Tipo_trans: {tipo_trans_valor[i]}, Ref_ampl: {ref_ampl_valor[i]}, No_CL: {no_cl_valor[i]}, Abono: {abono_valor[i]}, Cargo: {cargo_valor[i]}")
                             print(f"NuCuenta: {numero_cuenta[i]}, Fecha_Op: {fecha_operacion[i]}, Tipo_trans: {tipo_trans_valor[i]}, Ref_ampl: {ref_ampl_valor[i]}, No_CL: {no_cl_valor[i]}, Abono: {abono_valor[i]}, Cargo: {cargo_valor[i]}")
 
-                            # Formatear la fecha_operacion_i si es necesario
+                            # Formatear la fecha_operacion[i] si es necesario
                             fecha_operacion_formatted = None
                             if fecha_operacion[i]:
                                 try:
-                                    fecha_operacion_dt = formatear_fecha(fecha_operacion[i])
-                                    fecha_operacion_formatted = fecha_operacion_dt
+                                    fecha_operacion_formatted = formatear_fecha(fecha_operacion[i])
                                 except ValueError as e:
                                     print(f"Error al formatear la fecha: {str(e)}")
+                                    continue  # Saltar al siguiente registro si hay un error en el formato de la fecha
 
                             if fecha_operacion_formatted is not None:
                                 query = 'INSERT INTO Insertar_QA(NuCuenta, Fecha_Op, Tipo_trans, Ref_ampl, No_Cl, Abono, Cargo) VALUES (%s, %s, %s, %s, %s, %s, %s)'
                                 values = (numero_cuenta[i], fecha_operacion_formatted, tipo_trans_valor[i], ref_ampl_valor[i], no_cl_valor[i], abono_valor[i], cargo_valor[i])
-                                if abono_valor[i] != 'nan':
-                                    try:
-                                        cursor.execute(query, values)
-                                    except Exception as e:
-                                        # Manejar el error según sea necesario
-                                        print(f"Error en la consulta para el índice {i}: {str(e)}")
+                                try:
+                                    cursor.execute(query, values)
+                                except Exception as e:
+                                    print(f"Error en la consulta para el índice {i}: {str(e)}")
 
                         # Commit y cerrar la conexión
                         connection.commit()
-
                         return JsonResponse({'success': True, 'message': 'Datos insertados correctamente'})
                     else:
                         print(f"El número de registros a insertar ({max_length}) no coincide con el número de registros cargados. No se realizará la inserción.")
@@ -747,14 +846,16 @@ def enviar_route(request):
                     return JsonResponse({'success': True, 'message': 'No hay registros a insertar'}, status=200)
     except Exception as e:
         print(f'Error al procesar la solicitud: {str(e)}')
-        connection.rollback()
         return JsonResponse({'success': False, 'message': f'Error al procesar la solicitud: {str(e)}'}, status=500)
     
+
+
 
 
 @csrf_exempt
 def amex(request):
     try:
+        
         data = json.loads(request.body.decode('utf-8'))
         if not data:
             return JsonResponse({'success': False, 'message': 'No se recibieron datos en la solicitud'}, status=400)
@@ -772,44 +873,62 @@ def amex(request):
                 return JsonResponse({'success': False, 'message': 'No se pudo establecer la conexión a la base de datos'}, status=500)
             with connection.cursor() as cursor:
                 for banco_data in data.get('banco', []):
-                    numero_cuenta = banco_data.get('Banco', '').split('\n')
-                    fecha_operacion = banco_data.get('Fecha Operacion', '').split('\n')
-                    tipo_trans_valor = banco_data.get('Tipo de Transacción', '').split('\n')
-                    ref_ampl_valor = banco_data.get('Referencia Ampliada', '').split('\n')
-                    no_cl_valor = banco_data.get('No. Campo de Llave', '').split('\n')
-                    abono_valor = banco_data.get('Abono', '').split('\n')
-                    cargo_valor = banco_data.get('Cargo', '').split('\n')
+                    afiliacion = banco_data.get('Afiliacion', '').split('\n')
+                    fecha_t = banco_data.get('Fecha de Transaccion', '').split('\n')
+                    fecha_p = banco_data.get('Fecha de pago', '').split('\n')
+                    monto_c = banco_data.get('Monto cargo', '').split('\n')
+                    monto_p = banco_data.get('Monto pago', '').split('\n')
+                    print("Datos procesados:")
+                    print("afiliacion:", afiliacion)
+                    print("fecha_t:", fecha_t)
+                    print("fecha_p:", fecha_p)
+
 
                     # Asegura que todas las listas tengan la misma longitud
-                    max_length = max(len(numero_cuenta), len(fecha_operacion), len(tipo_trans_valor), len(ref_ampl_valor), len(no_cl_valor), len(abono_valor), len(cargo_valor))
-                    numero_cuenta += [''] * (max_length - len(numero_cuenta))
-                    fecha_operacion += [''] * (max_length - len(fecha_operacion))
-                    tipo_trans_valor += [''] * (max_length - len(tipo_trans_valor))
-                    ref_ampl_valor += [''] * (max_length - len(ref_ampl_valor))
-                    no_cl_valor += [''] * (max_length - len(no_cl_valor))
-                    abono_valor += [''] * (max_length - len(abono_valor))
-                    cargo_valor += [''] * (max_length - len(cargo_valor))
+                    max_length = max(len(afiliacion), len(fecha_t), len(fecha_p), len(monto_c), len(monto_p))
+                    afiliacion += [''] * (max_length - len(afiliacion))
+                    fecha_t += [''] * (max_length - len(fecha_t))
+                    fecha_p += [''] * (max_length - len(fecha_p))
+                    monto_c += [''] * (max_length - len(monto_c))
+                    monto_p += [''] * (max_length - len(monto_p))
 
+                    monto_c = [
+                        float(valor.replace(',', '.')) if valor.strip().replace(',', '.').replace('.', '').isdigit() else 0
+                        for valor in monto_c
+                    ]
+                    monto_p = [
+                        float(valor.replace(',', '.')) if valor.strip().replace(',', '.').replace('.', '').isdigit() else 0
+                        for valor in monto_p
+                    ]
+
+                    
                     if max_length > 0:
                         print(f"Registros a insertar en la base de datos")
                         print(f"Número de registros a insertar: {max_length}")
 
                         for i in range(max_length):
-                            print(f"NuCuenta: {numero_cuenta[i]}, Fecha_Op: {fecha_operacion[i]}, Tipo_trans: {tipo_trans_valor[i]}, Ref_ampl: {ref_ampl_valor[i]}, No_CL: {no_cl_valor[i]}, Abono: {abono_valor[i]}, Cargo: {cargo_valor[i]}")
+                            print(f"Numero receptor del pago: {afiliacion[i]},Nombre DBA: {fecha_t[i]}, Fecha de pago: {fecha_p[i]}, Monto: {monto_c[i]}, Monto_descuento: {monto_p[i]}")
 
                             # Formatear la fecha_operacion_i si es necesario
                             fecha_operacion_formatted = None
-                            if fecha_operacion[i]:
+                            fecha_pago_formatted = None
+                            
+                            if fecha_t[i]:
                                 try:
-                                    # locale.setlocale(locale.LC_ALL, 'es_ES.utf-8')
-                                    fecha_operacion_dt = formatear_fecha(fecha_operacion[i])
-                                    fecha_operacion_formatted = fecha_operacion_dt
+                                    fecha_operacion_formatted = formatear_fecha_amex(fecha_t[i])
                                 except ValueError as e:
-                                    print(f"Error al formatear la fecha: {str(e)}")
+                                    print(f"Error al formatear la fecha de transacción: {str(e)}")
 
-                            if fecha_operacion_formatted is not None:
-                                query = 'INSERT INTO TempExtractosBancarios (NuCuenta, Fecha_Op, Tipo_trans, Ref_ampl, No_Cl, Abono, Cargo) VALUES (%s, %s, %s, %s, %s, %s, %s)'
-                                values = (numero_cuenta[i], fecha_operacion_formatted, tipo_trans_valor[i], ref_ampl_valor[i], no_cl_valor[i], abono_valor[i], cargo_valor[i])
+                            if fecha_p[i]:
+                                try:
+                                    fecha_pago_formatted = formatear_fecha_amex(fecha_p[i])
+                                except ValueError as e:
+                                    print(f"Error al formatear la fecha de pago: {str(e)}")
+
+
+                            if fecha_operacion_formatted is not None and fecha_pago_formatted is not None:
+                                query = 'INSERT INTO Amex_Com (Numero_af, Fecha_pago, Fecha_tran, Monto_cargo, Monto_pago) VALUES (%s,%s, %s, %s, %s)'
+                                values = (afiliacion[i] ,fecha_operacion_formatted, fecha_pago_formatted, monto_c[i], monto_p[i])
 
                                 try:
                                     cursor.execute(query, values)
@@ -831,3 +950,56 @@ def amex(request):
         print(f'Error al procesar la solicitud: {str(e)}')
         connection.rollback()
         return JsonResponse({'success': False, 'message': f'Error al procesar la solicitud: {str(e)}'}, status=500)
+    
+    
+@csrf_exempt
+def formatear_fecha_amex(fecha_str):
+    """
+    Función para formatear diferentes tipos de fechas a formato YYYY-MM-DD.
+    """
+    print(f"Fecha original: {fecha_str}")
+
+    # Validar si ya está en formato YYYY-MM-DD
+    if re.match(r'^\d{4}-\d{2}-\d{2}$', fecha_str):
+        return fecha_str
+
+    meses = {
+        "enero": 1, "febrero": 2, "marzo": 3, "abril": 4, "mayo": 5, "junio": 6,
+        "julio": 7, "agosto": 8, "septiembre": 9, "octubre": 10, "noviembre": 11, "diciembre": 12
+    }
+
+    try:
+        # Validar formato DD/MM/YYYY
+        fecha_dt = datetime.strptime(fecha_str, '%d/%m/%Y')
+        fecha_formateada = fecha_dt.strftime('%Y-%m-%d')
+        return fecha_formateada
+    except ValueError:
+        # Pasar al siguiente tipo de validación
+        pass
+
+    # Validar formato "16 de octubre de 2024"
+    regex_extendido = r'(?P<dia>\d{1,2}) de (?P<mes>\w+) de (?P<anio>\d{4})'
+    match_extendido = re.match(regex_extendido, fecha_str)
+    if match_extendido:
+        dia = int(match_extendido.group('dia'))
+        mes = meses.get(match_extendido.group('mes').lower())
+        anio = int(match_extendido.group('anio'))
+        if mes and 1 <= dia <= 31:
+            return f"{anio:04d}-{mes:02d}-{dia:02d}"
+
+    # Validar formato "DDMMYYYY" (por ejemplo, "16102024")
+    regex_compacto = r'^(?P<dia>\d{2})(?P<mes>\d{2})(?P<anio>\d{4})$'
+    match_compacto = re.match(regex_compacto, fecha_str)
+    if match_compacto:
+        dia = int(match_compacto.group('dia'))
+        mes = int(match_compacto.group('mes'))
+        anio = int(match_compacto.group('anio'))
+        try:
+            fecha_dt = datetime(year=anio, month=mes, day=dia)
+            return fecha_dt.strftime('%Y-%m-%d')
+        except ValueError:
+            pass
+
+    # Si no se pudo formatear, devuelve None con un mensaje de error
+    print(f"Error al formatear la fecha: Formato no válido - {fecha_str}")
+    return None

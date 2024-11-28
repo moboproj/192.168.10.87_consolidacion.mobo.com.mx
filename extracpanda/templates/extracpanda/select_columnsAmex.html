@@ -1,281 +1,356 @@
 {% extends 'extracpanda/base2.html' %}
 {% load static %}
 {% block contenido %}
-<div class="container amex-modal mt-4">
-  <h2>American Express</h2>
-</div>
-<div class="container-xl mt-4">
-  <form method="post" id="formTableInicio">
-    {% csrf_token %}
-    <div class="table-responsive table-start">
-      <table id="tableInicio" class="table table-hover table-start-datatable">
-        <thead>
-          <tr>
-            <th scope="col" class="text-nowrap">Banco</th>
-            <th scope="col" class="text-nowrap">Fecha Operacion</th>
-            <th scope="col" class="text-nowrap">Tipo de Transacción</th>
-            <th scope="col" class="text-nowrap">Referencia Ampliada</th>
-            <th scope="col" class="text-nowrap">No. Campo de Llave</th>
-            <th scope="col" class="text-nowrap">Abono</th>
-            <th scope="col" class="text-nowrap">Cargo</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr id="rowInicio">
-            <td class="text-nowrap"></td>
-            <td class="text-nowrap"></td>
-            <td class="text-nowrap"></td>
-            <td class="text-nowrap"></td>
-            <td class="text-nowrap"></td>
-            <td class="text-nowrap"></td>
-            <td class="text-nowrap"></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="button-container">
-      <button class="btn btn btn-secondary btn-transfer" onclick="transferSelectedColumns(event)">
-        Transferir Columnas Seleccionadas
-      </button>
-      <button id="enviarInfoBtn" class="btn btn-danger btn-submit" onclick="enviarInfo(event)">
-        Enviar Info
-      </button>
-    </div>
-    <div class="table-responsive table-excel">
-      <table id="tableExcel" class="table table-light table-hover table-bordered table-excel-datatable">
-        <thead class="table-light">
-          <tr>
-            {% for column in columns %}
-            <th scope="col" class="button-header" onclick="selectColumn(this)">
-              {{ column }}
-            </th>
-            {% endfor %}
-          </tr>
-        </thead>
-        <tbody class="table-group-divider">
-          {% for row in rows %}
-          <tr>
-            {% for column, value in row.items %}
+<!DOCTYPE html>
+<html lang="esp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seleccionar Columnas</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+
+    .selected {
+      background-color: #36c306fc;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+    .button-header {
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+  </style>
+</head>
+<body class="container table-responsive">
+  <h2>Tabla "Inicio"</h2>
+<form method="post" id="formTableInicio">
+  {% csrf_token %}
+  <div class="table-responsive">
+  <table id="tableInicio" class="table table-hover my-datatable">
+    <thead>
+      <tr>
+        <!-- renombrar la columnas -->
+        <!-- <th scope="col" class="text-nowrap">Numero receptor del pago</th>
+        <th scope="col" class="text-nowrap">Nombre DBA</th>
+        <th scope="col" class="text-nowrap">Fecha de pago</th>
+        <th scope="col" class="text-nowrap">Monto del envio</th>
+        <th scope="col" class="text-nowrap">Monto del descuento</th>
+        <th scope="col" class="text-nowrap">IVA</th>
+        <th scope="col" class="text-nowrap">Monto pagado al banco</th> -->
+        <th scope="col" class="text-nowrap">Afiliacion</th>
+        <th scope="col" class="text-nowrap">Fecha de Transaccion</th>
+        <th scope="col" class="text-nowrap">Fecha de pago</th>
+        <th scope="col" class="text-nowrap">Monto cargo</th>
+        <th scope="col" class="text-nowrap">Monto pago</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr id="rowInicio">
+        <td class="text-nowrap"></td>
+        <td class="text-nowrap"></td>
+        <td class="text-nowrap"></td>
+        <td class="text-nowrap"></td>
+        <td class="text-nowrap"></td> 
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <!-- <button class="btn btn-primary" onclick="transferSelectedColumns()">Transferir Columnas Seleccionadas</button> -->
+  <button class="btn btn-primary" onclick="transferSelectedColumns(event)">Transferir Columnas Seleccionadas</button>
+  <!-- <button class="btn btn-primary" onclick="manualOrderInput()">Establecer Orden Manual</button> -->
+  <button id="enviarInfoBtn" class="btn btn-primary" onclick="enviarInfo(event)">Enviar Info</button>
+  <h2>Tabla "Excel"</h2>
+  <div class="table-responsive">
+  <table id="tableExcel" class="table table-Light my-datatable">
+    <thead>
+      <tr>
+        {% for column in columns %}
+          <th scope="col" class="button-header" onclick="selectColumn(this)">{{ column }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          {% for column, value in row.items %}
             <td>{{ value }}</td>
-            {% endfor %}
-          </tr>
           {% endfor %}
-        </tbody>
-      </table>
-    </div>
+        </tr>
+      {% endfor %}
+    </tbody>
+    </table>
+  </div>
   </form>
-</div>
-
-
-
-<script>
-  $(document).ready(function() {
-    let tetas = new DataTable('#tableExcel');
-  });
-</script>
-
     <script>
-         const selectedColumns = [];
-      function selectColumn(column) {
-        column.classList.toggle("selected");
-        const columnName = column.innerText;
+        $(document).ready(function() {
+            $('#dataTable').DataTable();
+        });
+    </script>
+  <script>
+   const selectedColumns = [];
+   
+function selectColumn(column) {
+  column.classList.toggle("selected");
+  const columnName = column.innerText;
 
-        // Verificar si la columna ya está seleccionada
-        const index = selectedColumns.indexOf(columnName);
-        if (index === -1) {
-          // Si no está seleccionada, agregarla a la lista
-          selectedColumns.push(columnName);
-        } else {
-          // Si está seleccionada, quitarla de la lista y limpiar el nombre en la fila de "Inicio"
-          selectedColumns.splice(index, 1);
-        }
+  // Verificar si la columna ya está seleccionada
+  const index = selectedColumns.indexOf(columnName);
+  if (index === -1) {
+    // Si no está seleccionada, agregarla a la lista
+    selectedColumns.push(columnName);
+  } else {
+    // Si está seleccionada, quitarla de la lista y limpiar el nombre en la fila de "Inicio"
+    selectedColumns.splice(index, 1);
+  }
 
-        // Obtener la fila de "Inicio"
+  // Obtener la fila de "Inicio"
+  const rowInicio = document.getElementById("rowInicio");
+
+  // Limpiar todas las celdas en la fila de "Inicio"
+  Array.from(rowInicio.cells).forEach((cell, index) => {
+    if (selectedColumns[index]) {
+      cell.innerText = selectedColumns[index];
+    } else {
+      cell.innerText = "";  // Si no hay valor para la columna, dejar en blanco
+    }
+  });
+
+  console.log("Columnas seleccionadas:", selectedColumns);
+}
+
+  // buena idea 
+  function manualOrderInput() {
+      // Cuadro de diálogo para que el usuario ingrese el orden manualmente
+      const orderInput = prompt("Ingrese el orden de las columnas separadas por comas (por ejemplo, Fecha,Referencia,Concepto):");
+
+      if (orderInput) {
+        // Separar las columnas ingresadas por comas y asignarlas a la fila de "Inicio"
         const rowInicio = document.getElementById("rowInicio");
+        const orderedColumns = orderInput.split(",").map(column => column.trim());
 
-        // Limpiar todas las celdas en la fila de "Inicio"
-        Array.from(rowInicio.cells).forEach((cell, index) => {
-          if (selectedColumns[index]) {
-            cell.innerText = selectedColumns[index];
-          } else {
-            cell.innerText = "";  // Si no hay valor para la columna, dejar en blanco
-          }
+        selectedColumns.length = 0;
+        orderedColumns.forEach((column, index) => {
+          rowInicio.cells[index].innerText = column;
+          selectedColumns.push(column);
         });
 
         console.log("Columnas seleccionadas:", selectedColumns);
       }
-
-        // buena idea
-        function manualOrderInput() {
-            // Cuadro de diálogo para que el usuario ingrese el orden manualmente
-            const orderInput = prompt("Ingrese el orden de las columnas separadas por comas (por ejemplo, Fecha,Referencia,Concepto):");
-
-            if (orderInput) {
-              // Separar las columnas ingresadas por comas y asignarlas a la fila de "Inicio"
-              const rowInicio = document.getElementById("rowInicio");
-              const orderedColumns = orderInput.split(",").map(column => column.trim());
-
-              selectedColumns.length = 0;
-              orderedColumns.forEach((column, index) => {
-                rowInicio.cells[index].innerText = column;
-                selectedColumns.push(column);
-              });
-
-              console.log("Columnas seleccionadas:", selectedColumns);
-            }
-          }
+    }
 
 
-          function transferSelectedColumns(event) {
-          event.preventDefault();  // Evitar la acción predeterminada del botón
+    function transferSelectedColumns(event) {
+    event.preventDefault();  // Evitar la acción predeterminada del botón
 
-          const tableExcel = document.getElementById("tableExcel");
-          const droppedRow = document.getElementById("rowInicio");
-          const cells = droppedRow.cells;
+    const tableExcel = document.getElementById("tableExcel");
+    const droppedRow = document.getElementById("rowInicio");
+    const cells = droppedRow.cells;
 
-          const selectedIndexes = [];
-          selectedColumns.forEach(columnName => {
-              const index = Array.from(tableExcel.rows[0].cells).findIndex(cell => cell.innerText === columnName);
-              selectedIndexes.push(index);
-          });
+    const selectedIndexes = [];
+    selectedColumns.forEach(columnName => {
+        const index = Array.from(tableExcel.rows[0].cells).findIndex(cell => cell.innerText === columnName);
+        selectedIndexes.push(index);
+    });
 
-          // copia los valores de las columnas seleccionadas
-          selectedIndexes.forEach((index, targetIndex) => {
-              const sourceCells = Array.from(tableExcel.rows).slice(1).map(row => row.cells[index]);
-              const targetCell = cells[targetIndex];
-              targetCell.innerText = sourceCells.map(cell => cell.innerText).join('\n');
-          });
-      }
+    // copia los valores de las columnas seleccionadas
+    selectedIndexes.forEach((index, targetIndex) => {
+        const sourceCells = Array.from(tableExcel.rows).slice(1).map(row => row.cells[index]);
+        const targetCell = cells[targetIndex];
+        targetCell.innerText = sourceCells.map(cell => cell.innerText).join('\n');
+    });
+}
 
-      // Definición de la función getCookie
-      function getCookie(name) {
-          const value = `; ${document.cookie}`;
-          const parts = value.split(`; ${name}=`);
-          if (parts.length === 2) return parts.pop().split(';').shift();
+// Definición de la función getCookie
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
 
-          const csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
-          return csrfTokenElement ? csrfTokenElement.value : null;
-      }
+    const csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+    return csrfTokenElement ? csrfTokenElement.value : null;
+}
 
-      // Definición de la función enviarInfo
-      function enviarInfo(event) {
-          event.preventDefault();
-          const rowInicio = document.getElementById("rowInicio");
+// Definición de la función enviarInfo
+function enviarInfo(event) {
+    event.preventDefault();
+    const rowInicio = document.getElementById("rowInicio");
 
-          if (!rowInicio) {
-              console.error("No se encontró la fila de inicio.");
-              return;
-          }
+    if (!rowInicio) {
+        console.error("No se encontró la fila de inicio.");
+        return;
+    }
 
-          function getCookie(name) {
-              const value = `; ${document.cookie}`;
-              const parts = value.split(`; ${name}=`);
-              if (parts.length === 2) return parts.pop().split(';').shift();
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
 
-              // Intenta buscar el token en el contenido del documento
-              const csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
-              return csrfTokenElement ? csrfTokenElement.value : null;
-          }
+        // Intenta buscar el token en el contenido del documento
+        const csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+        return csrfTokenElement ? csrfTokenElement.value : null;
+    }
 
-          const csrftoken = getCookie('csrftoken');
+    const csrftoken = getCookie('csrftoken');
 
-          // Aquí se realiza la asignación de data_dict
-          const dataToSend = {
-              banco: [{
-                  'Banco': rowInicio.cells[0].innerText.trim(),
-                  'Fecha Operacion': rowInicio.cells[1].innerText.trim(),
-                  'Tipo de Transacción': rowInicio.cells[2].innerText.trim(),
-                  'Referencia Ampliada': rowInicio.cells[3].innerText.trim(),
-                  'No. Campo de Llave': rowInicio.cells[4].innerText.trim(),
-                  'Abono': rowInicio.cells[5].innerText.trim(),
-                  'Cargo': rowInicio.cells[6].innerText.trim(),
-              }]
-          };
+    // Aquí se realiza la asignación de data_dict
+    const dataToSend = {
+        banco: [{
+            'Afiliacion': rowInicio.cells[0].innerText.trim(),
+            'Fecha de Transaccion': rowInicio.cells[1].innerText.trim(),
+            'Fecha de pago': rowInicio.cells[2].innerText.trim(),
+            'Monto cargo': rowInicio.cells[3].innerText.trim(),
+            'Monto pago': rowInicio.cells[4].innerText.trim(),
+        }]
+    };
 
-          const data_dict = JSON.stringify(dataToSend);
-          console.log("Datos a enviar:", data_dict);
+    const data_dict = JSON.stringify(dataToSend);
+    console.log("Datos a enviar:", data_dict);
 
-          fetch('{% url "extracpanda:amex" %}', {
-              method: 'POST',
-              headers: {
-                  'Content-type': 'application/json',
-                  'X-CSRFToken': csrftoken,
-              },
-              body: data_dict,
-          })
-          .then(response => response.json())
-          .then(responseData => {
-              console.log("Respuesta del servidor:", responseData);
+    fetch('{% url "extracpanda:amex" %}', {
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body: data_dict,
+    })
+    .then(response => response.json())
+    .then(responseData => {
+        console.log("Respuesta del servidor:", responseData);
 
-              if (responseData.status === 'error') {
-                  Swal.fire({
-                      title: 'Error',
-                      text: `Hubo un problema al enviar la información a la base de datos: ${responseData.message}`,
-                      icon: 'error',
-                      confirmButtonText: 'OK'
-                  });
-                  console.error('Error al enviar la solicitud:', responseData.message);
-              } else {
-                  Swal.fire({
-                      title: 'Éxito',
-                      text: 'La información se ha enviado a la base de datos',
-                      icon: 'success',
-                      confirmButtonText: 'OK'
-                  });
-                  console.log('Datos enviados exitosamente a la base de datos');
-              }
-          })
-          .catch(error => {
-              Swal.fire({
-                  title: 'Error',
-                  text: 'Hubo un problema al enviar la información a la base de datos',
-                  icon: 'error',
-                  confirmButtonText: 'OK'
-              });
-              console.error('Error al enviar la solicitud', error);
-          });
+        if (responseData.status === 'error') {
+            Swal.fire({
+                title: 'Error',
+                text: `Hubo un problema al enviar la información a la base de datos: ${responseData.message}`,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            console.error('Error al enviar la solicitud:', responseData.message);
+        } else {
+            Swal.fire({
+                title: 'Éxito',
+                text: 'La información se ha enviado a la base de datos',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+            console.log('Datos enviados exitosamente a la base de datos');
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            title: 'Error',
+            text: 'Hubo un problema al enviar la información a la base de datos',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        console.error('Error al enviar la solicitud', error);
+    });
 
-          return false;
-      }
+    return false;
+}
 
-      // Evento que escucha cuando el documento está completamente cargado
-      document.addEventListener("DOMContentLoaded", function() {
-          const botonEnviar = document.getElementById("tuIdDelBoton");
-          if (botonEnviar) {
-              botonEnviar.addEventListener("click", enviarInfo);
-          }
-      });
+// Evento que escucha cuando el documento está completamente cargado
+document.addEventListener("DOMContentLoaded", function() {
+    const botonEnviar = document.getElementById("tuIdDelBoton");
+    if (botonEnviar) {
+        botonEnviar.addEventListener("click", enviarInfo);
+    }
+});
 
 
-       * Function to transfer selected columns from the "Excel" table to the "Inicio" table.
-       *
-       * @param {Event} event - The event object representing the click event on the button.
-       *                        This parameter is used to prevent the default form submission behavior.
-       *
-       * @returns {void} - This function does not return a value. It updates the "Inicio" table with the selected columns.
-       */
-      function transferSelectedColumns(event) {
-          event.preventDefault();  // Evitar la acción predeterminada del botón
+//     function enviarInfo(event) {
+//       event.preventDefault();
+//     const rowInicio = document.getElementById("rowInicio");
 
-          const tableExcel = document.getElementById("tableExcel");
-          const droppedRow = document.getElementById("rowInicio");
-          const cells = droppedRow.cells;
-
-          const selectedIndexes = [];
-          selectedColumns.forEach(columnName => {
-              const index = Array.from(tableExcel.rows[0].cells).findIndex(cell => cell.innerText === columnName);
-              selectedIndexes.push(index);
-          });
-
-          // copia los valores de las columnas seleccionadas
-          selectedIndexes.forEach((index, targetIndex) => {
-              const sourceCells = Array.from(tableExcel.rows).slice(1).map(row => row.cells[index]);
-              const targetCell = cells[targetIndex];
-              targetCell.innerText = sourceCells.map(cell => cell.innerText).join('\n');
-          });
-      },
+//     if (!rowInicio) {
+//         console.error("No se encontró la fila de inicio.");
+//         return;
+//     }
+// //     function getCookie(name) {
+// //     const value = `; ${document.cookie}`;
+// //     const parts = value.split(`; ${name}=`);
+// //     if (parts.length === 2) return parts.pop().split(';').shift();
     
-    </script>
-  </body>
-  {% endblock %}
+// //     // Intenta buscar el token en el contenido del documento
+// //     const csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+// //     return csrfTokenElement ? csrfTokenElement.value : null;
+// // }
+
+
+//     const csrftoken = getCookie('csrftoken');
+//     console.log("CSRF Token:", csrftoken);
+//     // const csrftoken = getCookie('csrftoken') || document.querySelector('[name=csrfmiddlewaretoken]').value;
+//     // console.log("CSRF Token:", csrftoken);
+
+//     const dataToSend = {
+//         banco: [{
+//             'Banco': rowInicio.cells[0].innerText.trim(),
+//             'Fecha Operacion': rowInicio.cells[1].innerText.trim(),
+//             'Tipo de Transacción': rowInicio.cells[2].innerText.trim(),
+//             'Referencia Ampliada': rowInicio.cells[3].innerText.trim(),
+//             'No. Campo de Llave': rowInicio.cells[4].innerText.trim(),
+//             'Abono': rowInicio.cells[5].innerText.trim(),
+//             'Cargo': rowInicio.cells[6].innerText.trim(),
+//         }]
+//     };
+//     console.log('Datos a enviar:', dataToSend);
+//     fetch('{% url "extracpanda:enviar_route" %}', {
+//       // fetch('/enviar_route/', {
+//         method: 'POST',
+//         headers: {
+//             'Content-type': 'application/json',
+//             'X-CSRFToken': csrftoken,
+//         },
+//         body: JSON.stringify(dataToSend),
+//     })
+//     .then(response => response.json())
+//     .then(responseData => {
+//         if (responseData.status === 'error') {
+//             Swal.fire({
+//                 title: 'Error',
+//                 text: `Hubo un problema al enviar la información a la base de datos: ${responseData.message}`,
+//                 icon: 'error',
+//                 confirmButtonText: 'OK'
+//             });
+//             console.error('Error al enviar la solicitud:', responseData.message);
+//         } else {
+//             Swal.fire({
+//                 title: 'Éxito',
+//                 text: 'La información se ha enviado a la base de datos',
+//                 icon: 'success',
+//                 confirmButtonText: 'OK'
+//             });
+//             console.log('Datos enviados exitosamente a la base de datos');
+//         }
+//     })
+//     .catch(error => {
+//         Swal.fire({
+//             title: 'Error',
+//             text: 'Hubo un problema al enviar la información a la base de datos',
+//             icon: 'error',
+//             confirmButtonText: 'OK'
+//         });
+//         console.error('Error al enviar la solicitud', error);
+//     });
+//     console.log('{% url "extracpanda:enviar_route" %}');
+//     return false;
+// }
+  </script>
+</body>
+{% endblock %}
 </html>

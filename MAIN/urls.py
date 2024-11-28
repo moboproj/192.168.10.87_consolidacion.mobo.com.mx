@@ -4,6 +4,7 @@ from . import views
 
 from django.conf import settings
 from django.contrib.staticfiles.urls import static
+
 app_name = 'MAIN'
 urlpatterns = [
 
@@ -31,4 +32,12 @@ urlpatterns = [
     path('json_ventas_y_detalle/', views.ventas_detalles_v2, name='VD'),# agregado para consolidacion 
     path('modal_detalle/', views.modal_detalle,name='modal_detalle'), # agregado
     path('actualizar_registros/', views.actualizar_registros, name='actualizar_registros'), #actualizar
+    
+    path('reportes/', views.reportes, name='reportes'), #reportes
+    path('generar_reporte/', views.generar_reporte, name='generar_reporte'), #reportes
+    path('generar_reporte_amex/', views.reporte_amex, name='generar_reporte_amex'), #reportes
+    path('generar_reporte_amex_des/', views.generar_reporte_amex, name='generar_reporte_amex_des'), #reportes
+    path('Detalle_efectivo/', views.Tabla_detalle_efectivo, name='Tabla_detalle_efectivo'), #
+     path('ejecutar_sp/', views.ejecutar_sp, name='ejecutar_sp'),  #ejecutar sp de conciliacon automatica
+    path('ejecutar_SP_amex/', views.ejecutar_SP_amex, name='ejecutar_SP_amex'),  #ejecutar sp de conciliacon automatica 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

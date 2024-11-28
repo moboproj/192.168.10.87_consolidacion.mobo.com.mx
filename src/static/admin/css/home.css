@@ -70,7 +70,7 @@ header {
     /* Espacia los elementos entre sí */
     padding: 20px;
     /* Espaciado interno */
-    background-color:  hsl(210, 12%, 86%);
+    background-color: hsl(210, 12%, 86%);
     /* Fondo con color de fondo de la página */
     border-radius: 15px;
     /* Bordes redondeados */
@@ -184,7 +184,7 @@ header {
 
 /* Estilizar los encabezados de la tabla */
 .container.m6 .table thead th {
-    background-color:rgb(171, 178, 185);
+    background-color: rgb(171, 178, 185);
     color: #000000;
     /* Color de texto para el encabezado */
 }
@@ -255,7 +255,8 @@ header {
 
 /* Estilizar los encabezados de la tabla */
 .container.m7 .table thead th {
-    background-color: rgb(171, 178, 185);;
+    background-color: rgb(171, 178, 185);
+    ;
     color: #000000;
     /* Color de texto para el encabezado */
 }
@@ -416,7 +417,7 @@ header {
 }
 
 .custom-alert:active {
-    background-color:  rgb(149, 165, 166);
+    background-color: rgb(149, 165, 166);
     /* Fondo más oscuro al hacer clic usando variable */
     color: var(--color-white);
     /* Texto blanco al hacer clic usando variable */
@@ -456,7 +457,7 @@ header {
 }
 
 .custom-alert_:hover {
-    background-color:  rgb(149, 165, 166);
+    background-color: rgb(149, 165, 166);
     /* Color de fondo al hacer hover usando variable */
     transform: scale(1.05);
     /* Efecto de escalado */
@@ -465,7 +466,7 @@ header {
 }
 
 .custom-alert_:active {
-    background-color:  rgb(149, 165, 166);
+    background-color: rgb(149, 165, 166);
     /* Fondo más oscuro al hacer clic usando variable */
     color: var(--color-white);
     /* Texto blanco al hacer clic usando variable */
@@ -485,8 +486,8 @@ header {
     font-size: 16px;
     font-weight: bold;
     color: var(--color-white);
-    background-color:  rgb(149, 165, 166);
-    border: 1px solid  rgb(149, 165, 166);
+    background-color: rgb(149, 165, 166);
+    border: 1px solid rgb(149, 165, 166);
     border-radius: 5px;
     box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
@@ -549,7 +550,7 @@ header {
 
 /* Contenedor principal para la tarjeta */
 .container {
-    background-color:hsl(204, 8%, 95%);
+    background-color: hsl(204, 8%, 95%);
     /* Color de fondo del contenedor */
     padding: 20px;
     /* Espaciado alrededor del contenido */
@@ -557,7 +558,7 @@ header {
     /* Esquinas redondeadas */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     /* Sombreado sutil */
-   
+
 }
 
 
@@ -607,7 +608,7 @@ header {
 label {
     font-weight: bold;
     /* Texto en negrita */
-    color:  rgb(149, 165, 166);
+    color: rgb(149, 165, 166);
     /* Color del texto */
     margin-bottom: 10px;
     /* Espaciado inferior */
@@ -616,30 +617,42 @@ label {
 }
 
 /* Select del formulario */
-.form-control {
-    background-color: var(--color-white);
-    /* Fondo blanco del select */
-    border: 1px solid var(--secondary-color);
-    /* Borde color secundario */
+/* Estilo para todo el select */
+#tipo_operacion {
+    font-size: 16px;
+    padding: 8px;
     border-radius: 5px;
-    /* Esquinas redondeadas */
-    padding: 10px;
-    /* Espaciado interno */
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    /* Transición de color del borde y sombra */
+    transition: border 0.3s ease;
 }
 
-.form-control:hover,
-.form-control:focus {
-    border-color: var(--primary-color);
-    /* Cambia el color del borde al enfocar */
-    box-shadow: 0 0 5px rgb(255, 255, 255);
-    /* Sombra al enfocar */
+/* Efecto padre para todo el select cuando se enfoca */
+#tipo_operacion:focus {
+    border-color: #000000;
+    /* Cambia de color cuando el select es activado */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.596);
+    /* Efecto brillante alrededor */
+}
+
+/* Estilo específico para la opción "Opciones" */
+#tipo_operacion option[value=""] {
+    font-size: 12px;
+    /* Tamaño más pequeño */
+    font-style: italic;
+    color: #616f41;
+    /* Color diferente */
+}
+
+/* Efecto al pasar el mouse sobre cualquier opción */
+#tipo_operacion option:hover {
+    background-color: #cbddd1;
+    /* Cambia el fondo cuando pasas el mouse */
+    color: #000;
+    /* Texto en negro */
 }
 
 /* Botón del formulario */
 .btn-outline-success {
-    border-color:  rgb(149, 165, 166); 
+    border-color: rgb(149, 165, 166);
     /* Color del borde del botón */
     color: var(--primary-color);
     /* Color del texto del botón */
@@ -656,11 +669,11 @@ label {
 }
 
 .btn-outline-success:hover {
-    background-color:  rgb(149, 165, 166); 
+    background-color: rgb(149, 165, 166);
     /* Fondo del botón al pasar el ratón */
     color: var(--color-white);
     /* Color del texto al pasar el ratón */
-    border-color:  rgb(149, 165, 166); 
+    border-color: rgb(149, 165, 166);
     /* Color del borde al pasar el ratón */
 }
 
@@ -672,7 +685,7 @@ label {
     /* Espaciado desde el borde inferior */
     right: 20px;
     /* Espaciado desde el borde derecho */
-    background-color: rgb(149, 165, 166); 
+    background-color: rgb(149, 165, 166);
     /* Fondo verde */
     color: var(--color-white);
     /* Color del icono */
@@ -722,136 +735,7 @@ label {
 
 
 
-
-/* -------------------------------------------
-  -----------------------extractos------------------- */
-  .extractosCss {
-    width: 80%; /* Ajusta según tus necesidades */
-    height: auto; /* Mantiene la proporción */
-    object-fit: cover; /* Recorta la imagen para que se ajuste sin deformarse */
-    margin: 0 auto; /* Centra la imagen dentro del contenedor */
-    display: block; /* Asegura que el margen auto funcione correctamente */
-    border-radius: 8px; /* Añade esquinas redondeadas */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añade una sombra para un efecto visual mejorado */
-}
-
-
-.extractosCss {
-    transition: transform 0.3s ease, box-shadow 1.7s ease;
-    /* Añade sombra por defecto para un mejor contraste */
-    box-shadow: 0 4px 8px rgba(63, 188, 5, 0.2);
-    padding: 10px;
-}
-
-.extractosCss:hover {
-    /* transform: scale(1.05); */
-    /* Intensifica la sombra al pasar el ratón sobre la tarjeta */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-}
-
-/* Efectos específicos para la imagen */
-.extractosCss-img {
-    transition: opacity 0.3s ease, transform 0.3s ease;
-
-}
-
-.extractosCss:hover .debitoCss {
-    /* Cambia la opacidad de la imagen y agrega un ligero giro */
-    opacity: 0.8;
-    transform: scale(1.1) rotate(2deg);
-}
-
-
-/* Estilo para el contenedor general del formulario */
-.upload-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: #f9f9f9;
-}
-
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-/* Estilo para el área de arrastrar y soltar archivos */
-.drop-area {
-    border: 2px dashed #4a5b3b;
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
-    background-color: #e6e9ed;
-    height: 300px;
-    /* Ajusta la altura para que sea más alta */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.3s, border-color 0.3s;
-}
-
-.drop-area p {
-    margin: 0;
-    font-size: 16px;
-    color: #333;
-}
-
-.drop-area:hover {
-    background-color: #c9d3d3;
-    border-color: #616f41;
-}
-
-.drop-area input[type="file"] {
-    display: none;
-}
-
-.drop-area label {
-    padding: 10px 20px;
-    background-color: #4a5b3b;
-    color: #fff;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-}
-
-.drop-area label:hover {
-    background-color: #616f41;
-}
-
-/* Estilo para la lista de archivos seleccionados */
-#file-list {
-    margin-top: 20px;
-    list-style: none;
-    padding: 0;
-}
-
-#file-list li {
-    padding: 5px 0;
-    border-bottom: 1px solid #ddd;
-}
-
-/* Estilo para el botón de carga */
-.btn-primary {
-    display: block;
-    width: 100%;
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #4a5b3b;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-}
-
-.btn-primary:hover {
-    background-color:  rgb(149, 165, 166); 
-}
+/* extractos bancarios
 
 /* Estilo para el contenedor del select personalizado */
 .custom-select-container {
@@ -910,7 +794,7 @@ h1 {
 .btn {
     display: inline-block;
     padding: 12px 24px;
-    background-color: rgb(149, 165, 166); 
+    background-color: rgb(149, 165, 166);
     color: #fff;
     font-size: 16px;
     font-weight: bold;
@@ -925,7 +809,7 @@ h1 {
 
 /* Efecto de hover */
 .btn:hover {
-    background-color: rgb(149, 165, 166); 
+    background-color: rgb(149, 165, 166);
     transform: scale(1.05);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -985,7 +869,7 @@ h1 {
 
 /* Estilo base del botón */
 .btn {
-    background-color:  rgb(149, 165, 166); 
+    background-color: rgb(149, 165, 166);
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -1005,7 +889,7 @@ h1 {
 
 /* Efecto de clic */
 .btn:active {
-    background-color:  rgb(149, 165, 166); 
+    background-color: rgb(149, 165, 166);
     transform: scale(0.98);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -1013,42 +897,49 @@ h1 {
 
 /* CSS personalizado para la tabla */
 #tablaTPT {
-    background-color:  rgb(149, 165, 166); 
+    background-color: rgb(149, 165, 166);
 }
 
 #tablaTPT th,
 #tablaTPT td {
     text-align: center;
     font-weight: bold;
-    font-size: 0.9em; /* ajusta el tamaño de la fuente aquí */
+    font-size: 0.9em;
+    /* ajusta el tamaño de la fuente aquí */
 }
 
 #tablaTPT thead th {
-    background-color: rgb(149, 165, 166); 
-    color: #ffffff; /* puedes cambiar el color del texto de la cabecera si lo deseas */
+    background-color: rgb(149, 165, 166);
+    color: #ffffff;
+    /* puedes cambiar el color del texto de la cabecera si lo deseas */
 }
 
 #tablaTPT tbody td {
-    background-color:#ffffff;
+    background-color: #ffffff;
 }
 
 .subtitulo-tienda {
-    color: black; /* Cambia el color del texto a negro */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Agrega un sombreado al texto */
+    color: black;
+    /* Cambia el color del texto a negro */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    /* Agrega un sombreado al texto */
     font-size: 20px;
-    margin: 10px 0; /* Agrega un margen superior e inferior para separar visualmente el título */
+    margin: 10px 0;
+    /* Agrega un margen superior e inferior para separar visualmente el título */
 }
 
 .cover-container {
     position: relative;
     width: 100%;
-    height: 300px; /* Aumenta la altura del contenedor */
-    background-color: white; /* Fondo blanco */
+    height: 300px;
+    /* Aumenta la altura del contenedor */
+    background-color: white;
+    /* Fondo blanco */
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    
+
 }
 
 .cover-content {
@@ -1060,8 +951,9 @@ h1 {
 .cover-img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Asegura que la imagen cubra todo el contenedor sin distorsión */
-    
+    object-fit: cover;
+    /* Asegura que la imagen cubra todo el contenedor sin distorsión */
+
 }
 
 .cover-title {
@@ -1069,12 +961,17 @@ h1 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: #000; /* Color del texto */
-    background-color: rgba(255, 255, 255, 0.7); /* Fondo blanco semi-transparente */
-    padding: 10px 20px; /* Espaciado alrededor del título */
-    font-size: 2em; /* Tamaño del texto */
-    font-weight: bold; /* Hace que el texto sea más grueso */
-   
+    color: #000;
+    /* Color del texto */
+    background-color: rgba(255, 255, 255, 0.7);
+    /* Fondo blanco semi-transparente */
+    padding: 10px 20px;
+    /* Espaciado alrededor del título */
+    font-size: 2em;
+    /* Tamaño del texto */
+    font-weight: bold;
+    /* Hace que el texto sea más grueso */
+
 }
 
 
@@ -1082,7 +979,8 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%; /* Se asegura de que el contenedor ocupe el ancho completo */
+    width: 100%;
+    /* Se asegura de que el contenedor ocupe el ancho completo */
 }
 
 
@@ -1093,68 +991,87 @@ h1 {
     border-collapse: collapse;
     width: 100%;
     margin: 0 auto;
-  }
-  
-  #main-table thead {
-    background-color: #007bff; /* Color de fondo del encabezado */
-    color: white; /* Color del texto */
-    text-align: center; /* Centrar el texto */
-  }
-  
-  #main-table th, #main-table td {
-    border: 1px solid #ddd; /* Borde de las celdas */
-    padding: 12px; /* Espaciado interno de las celdas */
-  }
-  
-  #main-table tr:nth-child(even) {
-    background-color: #f2f2f2; /* Color de fondo de las filas pares */
-  }
-  
-  #main-table tr:hover {
-    background-color: #e9ecef; /* Color de fondo al pasar el ratón */
-  }
-  
-  /* Estilos del modal */
-  .modal-content {
-    border-radius: 10px; /* Bordes redondeados del modal */
-  }
-  
-  .modal-header {
-    background-color: #007bff; /* Color de fondo del encabezado del modal */
-    color: white; /* Color del texto del encabezado */
-  }
-  
-  .modal-footer {
-    background-color: #f9f9f9; /* Color de fondo del pie del modal */
-  }
-  
-  .modal-body {
-    padding: 20px; /* Espaciado interno del cuerpo del modal */
-  }
-  
-  .table {
-    margin-bottom: 0; /* Elimina el margen inferior de la tabla */
-  }
-  
-  /* Botones dentro del modal */
-  .btn-primary {
-    background-color: #007bff; /* Color de fondo del botón primario */
-    border-color: #007bff; /* Color del borde del botón primario */
-  }
-  
-  .btn-secondary {
-    background-color: #6c757d; /* Color de fondo del botón secundario */
-    border-color: #6c757d; /* Color del borde del botón secundario */
-  }
-  
-  /* Ajustes para los formularios dentro del modal */
-  .form-control {
-    margin-bottom: 1rem; /* Margen inferior para los campos de formulario */
-  }
-  
+}
+
+#main-table thead {
+    background-color: #007bff;
+    /* Color de fondo del encabezado */
+    color: white;
+    /* Color del texto */
+    text-align: center;
+    /* Centrar el texto */
+}
+
+#main-table th,
+#main-table td {
+    border: 1px solid #ddd;
+    /* Borde de las celdas */
+    padding: 12px;
+    /* Espaciado interno de las celdas */
+}
+
+#main-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+    /* Color de fondo de las filas pares */
+}
+
+#main-table tr:hover {
+    background-color: #e9ecef;
+    /* Color de fondo al pasar el ratón */
+}
+
+/* Estilos del modal */
+.modal-content {
+    border-radius: 10px;
+    /* Bordes redondeados del modal */
+}
+
+.modal-header {
+    background-color: #007bff;
+    /* Color de fondo del encabezado del modal */
+    color: white;
+    /* Color del texto del encabezado */
+}
+
+.modal-footer {
+    background-color: #f9f9f9;
+    /* Color de fondo del pie del modal */
+}
+
+.modal-body {
+    padding: 20px;
+    /* Espaciado interno del cuerpo del modal */
+}
+
+.table {
+    margin-bottom: 0;
+    /* Elimina el margen inferior de la tabla */
+}
+
+/* Botones dentro del modal */
+.btn-primary {
+    background-color: #007bff;
+    /* Color de fondo del botón primario */
+    border-color: #007bff;
+    /* Color del borde del botón primario */
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    /* Color de fondo del botón secundario */
+    border-color: #6c757d;
+    /* Color del borde del botón secundario */
+}
+
+/* Ajustes para los formularios dentro del modal */
+.form-control {
+    margin-bottom: 1rem;
+    /* Margen inferior para los campos de formulario */
+}
 
 
-  .tabla-transacciones {
+
+.tabla-transacciones {
     width: 100%;
     border-collapse: collapse;
     background-color: #fff;
@@ -1170,7 +1087,7 @@ h1 {
 }
 
 .tabla-transacciones th {
-    background-color:#91a0b3;
+    background-color: #91a0b3;
     color: #000000;
     font-weight: bold;
 }
@@ -1190,16 +1107,19 @@ h1 {
 
 /* -------------------------------------------
   -----------------------extractos modales------------------- */
-  .amex-modal {
+.amex-modal {
     background-color: hsl(70, 6%, 93%);
-    color: #ff0303b5; /* Letras blancas */
+    color: #ff0303b5;
+    /* Letras blancas */
     padding: 20px;
-    border-radius: 10px; /* Esquinas redondeadas */
-    text-align: center; /* Centrar el texto */
+    border-radius: 10px;
+    /* Esquinas redondeadas */
+    text-align: center;
+    /* Centrar el texto */
 
     /* Aplicar sombra de texto amarillo */
     text-shadow: 0 0 10px rgba(255, 0, 0, 0.692), 0 0 20px rgba(88, 88, 14, 0.6);
-    
+
     /* Tipografía personalizada */
     font-family: 'Arial', sans-serif;
     font-size: 2em;
@@ -1210,11 +1130,14 @@ h1 {
     margin-bottom: 10px;
 }
 
-  .button-container {
+.button-container {
     display: flex;
-    gap: 10px; /* Espacio entre botones */
-    justify-content: center; /* Centrar botones horizontalmente */
-    margin: 20px 0; /* Espacio superior e inferior */
+    gap: 10px;
+    /* Espacio entre botones */
+    justify-content: center;
+    /* Centrar botones horizontalmente */
+    margin: 20px 0;
+    /* Espacio superior e inferior */
 }
 
 /* Estilos para botones */
@@ -1228,15 +1151,15 @@ h1 {
 }
 
 .button-container .btn-primary {
-    background-color:  hsl(55, 85%, 41%);
+    background-color: hsl(55, 85%, 41%);
     color: #000000;
 }
 
 .button-container .btn-primary:hover {
-    background-color:hsl(70, 6%, 93%); 
+    background-color: hsl(70, 6%, 93%);
     transform: scale(1.05);
     color: #ffffff;
-    border-radius: 10px; 
+    border-radius: 10px;
 }
 
 .button-container .btn-primary:active {
@@ -1249,25 +1172,30 @@ h1 {
 }
 
 .table-start-datatable {
-    background-color: #ff0303b5; /* Fondo de la tabla */
+    background-color: #ff0303b5;
+    /* Fondo de la tabla */
 }
 
 .table-start-datatable thead th {
-    background-color: hsla(0, 4%, 31%, 0.379); 
-    color: #000000; /* Color del texto */
+    background-color: hsla(0, 4%, 31%, 0.379);
+    color: #000000;
+    /* Color del texto */
     font-weight: bold;
     text-align: center;
     padding: 0.75rem;
 }
 
-.table-start-datatable td, .table-start-datatable th {
-    border: 1px solid #dee2e6; /* Color del borde */
+.table-start-datatable td,
+.table-start-datatable th {
+    border: 1px solid #dee2e6;
+    /* Color del borde */
     padding: 0.75rem;
     text-align: center;
 }
 
 .table-start-datatable tbody tr:hover {
-    background-color: #cbddd1; /* Color de fondo al pasar el ratón */
+    background-color: #cbddd1;
+    /* Color de fondo al pasar el ratón */
 }
 
 /* Estilos para la tabla "table-excel" */
@@ -1276,12 +1204,15 @@ h1 {
 }
 
 .table-excel-datatable {
-    background-color: #ffffff; /* Fondo de la tabla */
+    background-color: #ffffff;
+    /* Fondo de la tabla */
 }
 
 .table-excel-datatable thead th {
-    background-color: #d3d3d3; /* Color de fondo para los encabezados */
-    color: #000; /* Color del texto */
+    background-color: #d3d3d3;
+    /* Color de fondo para los encabezados */
+    color: #000;
+    /* Color del texto */
     font-weight: bold;
     text-align: center;
     cursor: pointer;
@@ -1289,17 +1220,20 @@ h1 {
 }
 
 .table-excel-datatable tbody td {
-    border: 1px solid #dee2e6; /* Color del borde */
+    border: 1px solid #dee2e6;
+    /* Color del borde */
     padding: 0.75rem;
     text-align: center;
 }
 
 .table-excel-datatable tbody tr:hover {
-    background-color: #e0e0e0; /* Color de fondo al pasar el ratón */
+    background-color: #e0e0e0;
+    /* Color de fondo al pasar el ratón */
 }
 
 .table-group-divider tr {
-    border-top: 1px solid #dee2e6; /* Borde superior de cada fila */
+    border-top: 1px solid #dee2e6;
+    /* Borde superior de cada fila */
 }
 
 /* Estilos para los botones */
@@ -1309,33 +1243,42 @@ h1 {
 }
 
 .btn-transfer {
-    background-color: #28a745; /* Color de fondo */
-    border-color: #28a745; /* Color del borde */
+    background-color: #28a745;
+    /* Color de fondo */
+    border-color: #28a745;
+    /* Color del borde */
 }
 
 .btn-transfer:hover {
-    background-color: #218838; /* Color de fondo al pasar el ratón */
+    background-color: #218838;
+    /* Color de fondo al pasar el ratón */
 }
 
 .btn-submit {
-    background-color: #dc3545; /* Color de fondo */
-    border-color: #dc3545; /* Color del borde */
+    background-color: #dc3545;
+    /* Color de fondo */
+    border-color: #dc3545;
+    /* Color del borde */
 }
 
 .btn-submit:hover {
-    background-color: #c82333; /* Color de fondo al pasar el ratón */
+    background-color: #c82333;
+    /* Color de fondo al pasar el ratón */
 }
 
 .bbva-modal {
     background-color: hsla(224, 32%, 86%, 0.58);
-    color: #0318ff90; /* Letras blancas */
+    color: #0318ff90;
+    /* Letras blancas */
     padding: 20px;
-    border-radius: 10px; /* Esquinas redondeadas */
-    text-align: center; /* Centrar el texto */
+    border-radius: 10px;
+    /* Esquinas redondeadas */
+    text-align: center;
+    /* Centrar el texto */
 
     /* Aplicar sombra de texto amarillo */
     text-shadow: 0 0 10px rgba(2, 100, 227, 0.422), 0 0 20px rgba(88, 88, 14, 0.6);
-    
+
     /* Tipografía personalizada */
     font-family: 'Arial', sans-serif;
     font-size: 2em;
@@ -1348,14 +1291,17 @@ h1 {
 
 .azteca-modal {
     background-color: hsla(147, 39%, 77%, 0.473);
-    color: #0a652a90; /* Letras blancas */
+    color: #0a652a90;
+    /* Letras blancas */
     padding: 20px;
-    border-radius: 10px; /* Esquinas redondeadas */
-    text-align: center; /* Centrar el texto */
+    border-radius: 10px;
+    /* Esquinas redondeadas */
+    text-align: center;
+    /* Centrar el texto */
 
     /* Aplicar sombra de texto amarillo */
     text-shadow: 0 0 10px rgba(32, 51, 39, 0.557), 0 0 20px rgba(88, 88, 14, 0.6);
-    
+
     /* Tipografía personalizada */
     font-family: 'Arial', sans-serif;
     font-size: 2em;
@@ -1365,3 +1311,837 @@ h1 {
 .azteca-modal-title {
     margin-bottom: 10px;
 }
+
+/* ======== seccion consolidacion efectivo ============= */
+/* Estilo del contenedor del select */
+#tabla-select {
+    max-width: 400px;
+    /* Ajusta el ancho máximo del select */
+    border-radius: 8px;
+    /* Bordes redondeados */
+    border: 4px solid #000000;
+    /* Color del borde */
+    padding: 10px;
+    /* Espacio interior */
+    font-size: 16px;
+    /* Tamaño del texto */
+    background-color: #fff;
+    /* Color de fondo */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra sutil */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Transiciones suaves */
+}
+
+/* Estilo cuando el select está en foco */
+#tabla-select:focus {
+    border-color: #000000;
+    /* Color del borde al enfocar */
+    box-shadow: 0 0 0 0.2rem rgb(191, 194, 197);
+    /* Sombra al enfocar */
+    outline: none;
+    /* Elimina el contorno predeterminado */
+}
+
+
+#filter-form {
+    background-color: #91a0b3;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#filter-form .form-group {
+    margin-bottom: 15px;
+    width: 100%;
+    max-width: 400px;
+}
+
+#filter-form .form-control {
+    border-radius: 8px;
+    border: 3px solid #000000;
+    padding: 15px;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#filter-form .form-control:focus {
+    border-color: #94a3b4;
+    box-shadow: 0 0 0 0.3rem rgba(157, 173, 192, 0.612);
+
+}
+
+#filter-form .btn-dark {
+    background-color: #596f85b8;
+    border-color: #343a40;
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    max-width: 200px;/
+}
+
+#filter-form .btn-dark:hover {
+    background-color: #4e8bc7;
+}
+
+@media (min-width: 768px) {
+    #filter-form {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    #filter-form .form-group {
+        flex: 1;
+        min-width: 150px;
+    }
+
+    #filter-form .col-sm-2 {
+        flex: 1;
+        margin-bottom: 0;
+    }
+
+    #filter-form .col-sm-3 {
+        flex: 1;
+        margin-bottom: 0;
+    }
+}
+
+
+/* Estilo para el título del modal */
+.modal-title {
+    color: black;
+    /* Cambia el color del texto a negro */
+}
+
+
+#consolidado-select {
+    width: 150px;
+    /* Ajusta el ancho según lo necesites */
+    padding: 8px 12px;
+    /* Espacio interior del select */
+    border-radius: 8px;
+    /* Bordes redondeados */
+    border: 6px solid #ced4da;
+    /* Contorno del select */
+    background-color: #fff;
+    /* Color de fondo */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Sombra sutil */
+    font-size: 16px;
+    /* Tamaño del texto */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Transiciones suaves */
+}
+
+/* Estilo cuando el select está en foco */
+#consolidado-select:focus {
+    border-color: #000000;
+    /* Color del borde al enfocar */
+    box-shadow: 0 0 0 0.2rem rgba(10, 10, 10, 0.25);
+    /* Sombra al enfocar */
+    outline: none;
+    /* Elimina el contorno predeterminado */
+}
+
+/* Contenedor principal */
+.container {
+    max-width: 1200px;
+    /* Ajusta el ancho máximo del contenedor */
+}
+
+/* Estilo para las tarjetas de filtros */
+.filter-card {
+    background-color: #c9d8ec;
+    /* Color de fondo */
+    padding: 15px;
+    /* Espacio interior */
+    border-radius: 8px;
+    /* Bordes redondeados */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Sombra sutil */
+    margin-bottom: 40px;
+    /* Espacio inferior */
+}
+
+/* Estilo para los labels */
+.form-label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* Estilo para los inputs */
+.form-control {
+    border-radius: 6px;
+    /* Bordes redondeados */
+    border: 5px solid #010101;
+    /* Contorno del input */
+    padding: 15px;
+    /* Espacio interior */
+    margin-bottom: 20px;
+    /* Espacio inferior */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Transiciones suaves */
+}
+
+/* Estilo al enfocar los inputs */
+.form-control:focus {
+    border-color: #040404;
+    /* Color del borde al enfocar */
+    box-shadow: 0 0 0 0.2rem rgb(0, 0, 0);
+    /* Sombra al enfocar */
+    outline: none;
+    /* Elimina el contorno predeterminado */
+}
+
+/* Estilo para las tablas */
+.table {
+    margin-top: 20px;
+    /* Espacio superior */
+    border-radius: 8px;
+    /* Bordes redondeados */
+}
+
+/* Estilo para las cabeceras de las tablas */
+.table thead {
+    background-color: #91a0b3;
+    /* Color de fondo */
+    color: rgb(0, 0, 0);
+    /* Color del texto */
+}
+
+/* Estilo para el total de ventas y extractos */
+.total-venta,
+.total-extracto {
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 1.2rem;
+    /* Tamaño del texto */
+}
+
+/* Estilo general para las tablas */
+.table {
+    width: 100%;
+    /* Asegura que la tabla ocupe todo el ancho del contenedor */
+    border-collapse: collapse;
+    /* Elimina los espacios entre bordes de celdas */
+    margin-top: 20px;
+    /* Espacio superior */
+}
+
+/* Estilo para los encabezados de las tablas */
+.table thead th {
+    background-color: #f0f0f0;
+    /* Color de fondo claro */
+    color: #333;
+    /* Color del texto */
+    border: 1px solid #ddd;
+    /* Contorno sutil */
+    padding: 10px;
+    /* Espacio interior */
+    text-align: left;
+    /* Alineación del texto */
+    font-weight: bold;
+    /* Negrita */
+}
+
+/* Estilo para las filas del cuerpo de la tabla */
+.table tbody tr:nth-child(even) {
+    background-color: #91a0b3;
+    /* Color de fondo para filas pares */
+}
+
+/* Estilo para las filas del cuerpo de la tabla */
+.table tbody tr:nth-child(odd) {
+    background-color: #91a0b3;
+    /* Color de fondo para filas impares */
+}
+
+/* Estilo para los bordes de las celdas */
+.table td,
+.table th {
+    border: 1px solid #ddd;
+    /* Contorno sutil de las celdas */
+    padding: 8px;
+    /* Espacio interior */
+}
+
+/* Estilo para las celdas al pasar el ratón */
+.table tbody tr:hover {
+    background-color: #91a0b3;
+    /* Color de fondo al pasar el ratón */
+    cursor: pointer;
+    /* Cambia el cursor al pasar el ratón */
+}
+
+
+/* Estilo para el contenedor del footer del modal */
+.modal-footer-container {
+    display: flex;
+    justify-content: center;
+    /* Centra el contenido horizontalmente */
+    padding: 10px;
+    /* Espacio alrededor del contenedor */
+}
+
+/* Estilo para el footer del modal */
+.modal-footer {
+    background-color: #343a40;
+    /* Fondo oscuro */
+    border-radius: 5px;
+    /* Bordes redondeados */
+    padding: 10px 20px;
+    /* Espacio interior */
+    display: flex;
+    gap: 10px;
+    /* Espacio entre los botones */
+}
+
+/* Estilo para los botones */
+.modal-footer .btn {
+    border-radius: 5px;
+    /* Bordes redondeados */
+    padding: 5px 15px;
+    /* Espacio interior reducido para botones pequeños */
+    font-size: 0.875rem;
+    /* Tamaño de fuente pequeño */
+    transition: all 0.3s ease;
+    /* Transición suave para efectos */
+}
+
+.modal-footer .btn-primary {
+    background-color: #007bff;
+    /* Color de fondo azul */
+    border-color: #007bff;
+    /* Borde azul */
+    color: #fff;
+    /* Color del texto blanco */
+}
+
+.modal-footer .btn-primary:hover {
+    background-color: #0056b3;
+    /* Color de fondo al pasar el ratón */
+    border-color: #004085;
+    /* Borde al pasar el ratón */
+}
+
+.modal-footer .btn-secondary {
+    background-color: #6c757d;
+    /* Color de fondo gris */
+    border-color: #6c757d;
+    /* Borde gris */
+    color: #fff;
+    /* Color del texto blanco */
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: #5a6268;
+    /* Color de fondo al pasar el ratón */
+    border-color: #545b62;
+    /* Borde al pasar el ratón */
+}
+
+
+
+
+
+/* Ajuste del div .mariachi */
+.mariachi {
+    width: 100%;
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(0, 0, 0);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    margin: 0;
+    border: 2px solid #90928c;
+    /* Ajusta el color del borde según prefieras */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    /* Añade sombra al div */
+    border-radius: 8px;
+    /* Bordes redondeados, opcional */
+}
+
+.mariachi::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 249, 249, 0.5);
+    z-index: 1;
+    border-radius: 8px;
+    /* Asegura que la capa oscura siga el borde redondeado */
+}
+
+.mariachi h1 {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    font-size: 1.5em;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.mariachi:hover h1 {
+    transform: scale(1.1);
+    color: #C9D0CA;
+}
+
+.fit {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    border-radius: 8px;
+    /* Para que la imagen siga el borde redondeado */
+}
+
+/* Estilo general para el formulario */
+#reporteForm {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    /* Centra el texto dentro del formulario */
+}
+
+/* Estilo para todos los labels */
+.form-label {
+    font-weight: bold;
+    font-size: 1.25em;
+    /* Ajusta el tamaño de la fuente */
+    color: #000000;
+    /* Cambia el color según prefieras */
+    display: block;
+    /* Hace que el label ocupe todo el ancho */
+    margin-bottom: 0.5rem;
+    /* Espacio entre el label y el input */
+}
+
+/* Estilo específico para el icono en el label de Tipo de reporte */
+.form-label:first-of-type::before {
+    content: "⦿ ";
+    /* Agrega el símbolo solo al primer label */
+    color: #EADEDA;
+    margin-right: 0.3rem;
+}
+
+/* Estilo para los inputs y selects */
+.form-control,
+.form-select {
+    text-align: center;
+    /* Centra el texto dentro del input y select */
+    font-size: 1em;
+}
+
+/* Alineación y espaciado entre columnas */
+.row>.col-md-6 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Estilo de los contenedores de cada campo */
+.mb-3,
+.mb-4 {
+    margin-bottom: 1.5rem;
+    /* Espacio entre cada campo */
+}
+
+/* Ajuste de márgenes superiores en el formulario */
+#reporteForm .mb-4 {
+    margin-top: 1rem;
+}
+
+#tipoReporte {
+    border: 2px solid #A49F8D;
+    /* Borde negro ancho */
+    border-radius: 5px;
+    /* Bordes redondeados, opcional */
+    padding: 0.5rem;
+    /* Espacio interno para que se vea mejor */
+}
+
+label.form-label {
+    border: 1px solid #EADEDA;
+    /* Borde negro ancho */
+    padding: 0.2rem 0.5rem;
+    /* Espacio interno para que el borde se vea mejor */
+    border-radius: 3px;
+    /* Bordes redondeados */
+    display: inline-block;
+    /* Para que el borde se ajuste solo al tamaño del texto */
+}
+
+#fecha_ini,
+#fecha_fin {
+    border: 1px solid #C9D0CA;
+    /* Borde negro ancho */
+    border-radius: 2px;
+    /* Bordes redondeados */
+    padding: 0.5rem;
+    /* Espacio interno para mejorar la apariencia */
+}
+
+#select2,
+#tipoReporte {
+    border: 3px solid #EADEDA;
+    /* Borde negro ancho */
+    border-radius: 1px;
+    /* Bordes redondeados */
+    padding: 0.5rem;
+    /* Espacio interno */
+    background-color: #fff;
+    /* Fondo blanco para destacar opciones */
+}
+
+.form-card {
+    padding: 2rem;
+    /* Espacio interno alrededor del contenido */
+    margin: 2rem auto;
+    /* Margen alrededor para centrar y separar */
+    border: 2px solid #EADEDA;
+    /* Borde gris para simular una hoja */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    background: linear-gradient(135deg, #ffffff, #f0f0f0);
+    /* Fondo radiante */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra para resaltar */
+}
+
+.btn.btn-primary {
+    width: auto !important;
+    /* Ajusta el ancho automáticamente */
+    padding: 0.5rem 1rem !important;
+    /* Tamaño más pequeño */
+    background-color: #EADEDA !important;
+    /* Color gris */
+    border-color: #C9D0CA !important;
+    /* Borde gris */
+    color: #000000 !important;
+    /* Texto blanco */
+    display: block;
+    /* Para centrar el botón */
+    margin: 0 auto !important;
+    /* Centra el botón horizontalmente */
+    transition: background-color 0.3s ease;
+    /* Transición suave para hover */
+}
+
+.btn.btn-primary:hover {
+    background-color: #EADEDA !important;
+    /* Color más oscuro en hover */
+    border-color: #A49F8D !important;
+    /* Borde más oscuro en hover */
+}
+
+#no_sucursal {
+    border: 2px solid #C9D0CA;
+    /* Borde gris */
+    border-radius: 1px;
+    /* Bordes redondeados */
+    padding: 0.5rem;
+    /* Espacio interno */
+    background-color: #f0e1e5;
+    /* Fondo claro */
+    color: #A49F8D;
+    /* Texto oscuro */
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    /* Transición para cambios */
+}
+
+#no_sucursal:focus {
+    border-color: #f3f2f3;
+    /* Borde más oscuro en focus */
+    background-color: #e6d6d5;
+    /* Fondo blanco en focus */
+    outline: none;
+    /* Remueve el borde de enfoque predeterminado */
+}
+
+/* drop menu */
+.dropdown-menu {
+    background: linear-gradient(135deg, #ffffff, #C9D0CA) !important;
+    /* Fondo degradado */
+    border: none !important;
+    /* Sin bordes */
+    border-radius: 8px !important;
+    /* Bordes redondeados */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15) !important;
+    /* Sombra suave */
+    padding: 0.5rem 0 !important;
+    /* Espacio interno */
+    transition: opacity 0.3s ease, transform 0.3s ease !important;
+    /* Transiciones */
+    opacity: 0 !important;
+    /* Comienza invisible */
+    transform: translateY(-10px) !important;
+    /* Desplaza hacia arriba para el efecto */
+    pointer-events: none !important;
+    /* Desactiva eventos cuando está oculto */
+}
+
+.dropdown-menu.show {
+    opacity: 1 !important;
+    /* Hace visible el menú */
+    transform: translateY(0) !important;
+    /* Posición normal al mostrar */
+    pointer-events: auto !important;
+    /* Activa eventos cuando está visible */
+}
+
+.dropdown-item {
+    padding: 0.75rem 1.5rem !important;
+    /* Espacio interno para cada elemento */
+    color: #333 !important;
+    /* Color del texto */
+    transition: background-color 0.3s ease, color 0.3s ease !important;
+    /* Transición para hover */
+    border-radius: 5px !important;
+    /* Bordes redondeados en cada elemento */
+}
+
+.dropdown-item:hover {
+    background-color: #e0e0e0 !important;
+    /* Fondo más oscuro en hover */
+    color: #000 !important;
+    /* Color del texto en hover */
+}
+
+.dropdown-item:active {
+    background-color: #EADEDA !important;
+    /* Fondo más oscuro al hacer clic */
+    color: #000 !important;
+    /* Texto negro */
+}
+
+
+
+.formateo {
+    border: 3px solid #000;
+    /* Borde negro */
+    border-radius: 8px;
+    /* Bordes redondeados */
+    padding: 0.5rem;
+    /* Espacio interno */
+    background-color: #f9f9f9;
+    /* Fondo claro */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    /* Sombra */
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    /* Transición suave */
+}
+
+.formateo:focus {
+    border-color: #333;
+    /* Borde más oscuro al enfocar */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    /* Sombra brillante en foco */
+    outline: none;
+    /* Elimina el borde predeterminado */
+}
+
+.formateo option:first-of-type {
+    color: #555;
+    /* Color del texto */
+    font-weight: bold;
+    /* Resalta el texto */
+    background-color: #e0e0e0;
+    /* Fondo gris claro */
+    padding: 8px;
+    /* Espacio interno para simular margen */
+    border-bottom: 2px solid #000;
+    /* Línea inferior negra */
+}
+
+.scooby-doo {
+    border: 3px solid #000;
+    /* Borde negro */
+    padding: 2rem;
+    /* Espacio interno */
+    background-color: #f9f9f9;
+    /* Fondo gris claro */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Sombra */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    margin-bottom: 2rem;
+    /* Margen inferior */
+}
+
+.bugs-bunny {
+    margin-bottom: 1.5rem;
+    /* Espacio entre alert y otros elementos */
+}
+
+.tom-and-jerry {
+    background: linear-gradient(135deg, #f0f0f0, #d4d4d4);
+    /* Fondo degradado */
+    border: 2px solid #000;
+    /* Borde negro */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    /* Sombra suave */
+    padding: 1rem;
+    /* Espacio interno */
+    border-radius: 5px;
+    /* Bordes redondeados */
+}
+
+.daffy-duck {
+    color: #333;
+    /* Texto gris oscuro */
+    font-weight: bold;
+    /* Texto en negrita */
+    margin-bottom: 0.5rem;
+    /* Espacio inferior */
+}
+
+.tweety {
+    border: 2px solid #666;
+    /* Borde gris oscuro */
+    border-radius: 5px;
+    /* Bordes redondeados */
+    padding: 0.5rem;
+    /* Espacio interno */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Transición para efectos */
+}
+
+.tweety:focus {
+    border-color: #000;
+    /* Borde negro al enfocar */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+    /* Sombra al enfocar */
+    outline: none;
+    /* Quita el borde de enfoque predeterminado */
+}
+
+.road-runner {
+    background-color: #666;
+    /* Fondo gris oscuro */
+    color: #fff;
+    /* Texto blanco */
+    border: 2px solid #000;
+    /* Borde negro */
+    padding: 0.5rem 1.5rem;
+    /* Espacio interno del botón */
+    border-radius: 5px;
+    /* Bordes redondeados */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    /* Transición en hover */
+}
+
+.road-runner:hover {
+    background-color: #333;
+    /* Fondo más oscuro en hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    /* Sombra en hover */
+}
+
+.pink-panther {
+    border: 3px solid #000;
+    /* Borde negro */
+    padding: 2rem;
+    /* Espacio interno */
+    background-color: #f9f9f9;
+    /* Fondo gris claro */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Sombra */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    margin-bottom: 2rem;
+    /* Margen inferior */
+}
+
+.speedy-gonzales {
+    background: linear-gradient(135deg, #f0f0f0, #d4d4d4);
+    /* Fondo degradado */
+    border: 2px solid #000;
+    /* Borde negro */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    /* Sombra suave */
+    padding: 1rem;
+    /* Espacio interno */
+    border-radius: 5px;
+    /* Bordes redondeados */
+}
+
+.mini-label {
+    font-size: 0.85rem;
+    /* Tamaño de fuente pequeño */
+    color: #333;
+    /* Color de texto gris oscuro */
+    font-weight: normal;
+    /* Peso de fuente normal */
+    margin-bottom: 0.2rem;
+    /* Espacio inferior reducido */
+}
+
+.fecha-label {
+    display: block;
+    /* Asegura que el label esté encima del input */
+    padding: 0;
+    /* Sin espacio extra */
+    line-height: 1.2;
+    /* Ajusta la altura de la línea para el tamaño pequeño */
+}
+
+.tweety {
+    border: 2px solid #666;
+    /* Borde gris oscuro */
+    border-radius: 5px;
+    /* Bordes redondeados */
+    padding: 0.5rem;
+    /* Espacio interno */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Transición para efectos */
+}
+
+.tweety:focus {
+    border-color: #000;
+    /* Borde negro al enfocar */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+    /* Sombra al enfocar */
+    outline: none;
+    /* Quita el borde de enfoque predeterminado */
+}
+
+.bugs-bunny {
+    background-color: #666;
+    /* Fondo gris oscuro */
+    color: #fff;
+    /* Texto blanco */
+    border: 2px solid #000;
+    /* Borde negro */
+    padding: 0.5rem 1.5rem;
+    /* Espacio interno del botón */
+    border-radius: 5px;
+    /* Bordes redondeados */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    /* Transición en hover */
+}
+
+.bugs-bunny:hover {
+    background-color: #333;
+    /* Fondo más oscuro en hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    /* Sombra en hover */
+}
+
+
+

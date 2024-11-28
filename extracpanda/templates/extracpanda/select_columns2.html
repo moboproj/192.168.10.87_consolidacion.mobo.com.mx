@@ -81,9 +81,16 @@
   </div>
 
   <script>
-    $(document).ready(function() {
-      let tetas = new DataTable('#tableExcel');
-    });
+ $(document).ready(function() {
+  // Inicializar el DataTable con las opciones adecuadas
+  let table = new DataTable('#tableExcel', {
+    paging: false, // Desactiva la paginación
+    searching: true, // Mantiene la barra de búsqueda
+    info: false, // Desactiva la información sobre el número de entradas
+    ordering: true // Mantiene el ordenamiento por columnas
+  });
+});
+
   </script>
     </script>
     <script>

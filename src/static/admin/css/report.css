@@ -1,0 +1,20 @@
+.custom-container {
+    background-color: #00439b;
+    /* Fondo claro */
+    border-radius: 8px;
+    /* Bordes redondeados */
+    padding: 20px;
+    /* Espaciado interno */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra sutil */
+    text-align: center;
+}
+
+.custom-container h4 {
+    font-size: 1.5em;
+    color: #616f41;
+    /* Color de texto verde */
+    margin-bottom: 20px;
+    font-weight: 600;
+    /* Negrita */
+}

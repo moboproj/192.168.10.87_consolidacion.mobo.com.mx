@@ -1,0 +1,147 @@
+{% extends 'extracpanda/base2.html' %}
+{% load static %}
+{% block contenido%}
+
+<script>
+    function validaFormulario() {
+        var tipoReporte = document.getElementById('tipoReporte').value;
+        var date1 = document.getElementById('fecha_ini').value;
+        var date2 = document.getElementById('fecha_fin').value;
+        //var sucursal = document.getElementById('no_sucursal').value;
+
+        if (tipoReporte === "" || date1 === "" || date2 === "") {
+            alert("Por favor, complete todos los campos.");
+            return false;
+        }
+        return true;
+    }
+</script>
+</head>
+
+<body>
+    <div class="mariachi mb-4">
+        <h1 class="text-center mb-4">Descarga los reportes aqui ⤵</h1>
+        <img class="fit" src="{% static 'admin/images/repos.jpg' %}" alt="finanzas" />
+    </div>
+
+
+    <div class="container-sm form-card">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form id="reporteForm" onsubmit="return validaFormulario()" method="post">
+                    {% csrf_token %}
+                    <!-- Etiqueta Select -->
+                    <div class="mb-4 text-center">
+                        <label class="form-label fw-bold fs-4 mt-4 mb-4"> Tarjetas / Efectivo</label>
+                        <select class="form-select" id="tipoReporte" name="tipoReporte">
+                            <option value="">Selecciona ▼</option>
+                            <option value="1">Consolidado 🗹</option>
+                            <option value="2">NO Consolidado 𐄂</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <!-- Primera columna: Fecha 1 e Input -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="fecha_ini" class="form-label">Fecha 1:</label>
+                                <input type="date" class="form-control" id="fecha_ini" name="fecha_ini" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="no_sucursal" class="form-label">Sucursal:</label>
+                                <input type="text" class="form-control" id="no_sucursal" name="no_sucursal">
+                            </div>
+                        </div>
+
+                        <!-- Segunda columna: Fecha 2 y Select -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="fecha_fin" class="form-label">Fecha 2:</label>
+                                <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="select2" class="form-label">Incidencia:</label>
+                                <select class="form-select" id="select2" name="select2">
+                                    <option value="1">Opción A</option>
+                                    <option value="2">Opción B</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botón de Enviar -->
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getCSRFToken() {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, 10) === 'csrftoken=') {
+                        cookieValue = decodeURIComponent(cookie.substring(10));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        document.getElementById('reporteForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Evitar el comportamiento predeterminado del formulario
+
+            const tipoReporte = document.getElementById('tipoReporte').value;
+            const fecha1 = document.getElementById('fecha_ini').value;
+            const sucursal = document.getElementById('no_sucursal').value;
+            const fecha2 = document.getElementById('fecha_fin').value;
+            const incidencia = document.getElementById('select2').value;
+
+            const data = new FormData();
+            data.append('tipoReporte', tipoReporte);
+            data.append('fecha1', fecha1);
+            data.append('sucursal', sucursal);
+            data.append('fecha2', fecha2);
+            data.append('incidencia', incidencia);
+
+            fetch('{% url "MAIN:generar_reporte" %}', {
+                method: 'POST',
+                body: data,
+                headers: {
+                    'X-CSRFToken': getCSRFToken() // Incluye el token CSRF aquí
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.blob();
+                    } else {
+                        throw new Error('Error en la respuesta del servidor.');
+                    }
+                })
+                .then(blob => {
+                    // Crear una URL para el archivo descargable
+                    const url = window.URL.createObjectURL(new Blob([blob]));
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `reporte_${fecha1}_a_${fecha2}.xlsx`;  // Nombre del archivo
+                    document.body.appendChild(a);
+                    a.click();  // Descargar el archivo
+                    a.remove();  // Eliminar el enlace
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Hubo un error al generar el reporte');
+                });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+{% endblock %}

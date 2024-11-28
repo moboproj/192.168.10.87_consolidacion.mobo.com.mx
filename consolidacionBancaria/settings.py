@@ -29,7 +29,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '40.124.171.87',
     '127.0.0.1',
-    'uat.consolidacionbancaria.mobo.com.mx',
+    'consolidacionbancaria.mobo.com.mx',
     ]
  
 
